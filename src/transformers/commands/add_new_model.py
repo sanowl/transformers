@@ -39,6 +39,11 @@ def add_new_model_command_factory(args: Namespace):
 
 
 class AddNewModelCommand(BaseTransformersCLICommand):
+    def __init__(self, testing: bool, testing_file: str, path=None, *args):
+        self._testing = testing
+        self._testing_file = testing_file
+        self._path = path
+
     @staticmethod
     def register_subcommand(parser: ArgumentParser):
         add_new_model_parser = parser.add_parser("add-new-model")
@@ -49,37 +54,94 @@ class AddNewModelCommand(BaseTransformersCLICommand):
         )
         add_new_model_parser.set_defaults(func=add_new_model_command_factory)
 
-    def __init__(self, testing: bool, testing_file: str, path=None, *args):
-        self._testing = testing
-        self._testing_file = testing_file
-        self._path = path
-
     def run(self):
         warnings.warn(
-            "The command `transformers-cli add-new-model` is deprecated and will be removed in v5 of Transformers. "
-            "It is not actively maintained anymore, so might give a result that won't pass all tests and quality "
-            "checks, you should use `transformers-cli add-new-model-like` instead."
+            f"The command `transformers-cli add-new-model` is deprecated and will be removed in v5 of Transformers. "
+            f"It is not actively maintained anymore, so might give a result that won't pass all tests and quality "
+            f"checks, you should use `transformers-cli add-new-model-like` instead."
         )
         if not _has_cookiecutter:
             raise ImportError(
                 "Model creation dependencies are required to use the `add_new_model` command. Install them by running "
                 "the following at the root of your `transformers` clone:\n\n\t$ pip install -e .[modelcreation]\n"
             )
-        # Ensure that there is no other `cookiecutter-template-xxx` directory in the current working directory
-        directories = [directory for directory in os.listdir() if "cookiecutter-template-" == directory[:22]]
-        if len(directories) > 0:
-            raise ValueError(
-                "Several directories starting with `cookiecutter-template-` in current working directory. "
-                "Please clean your directory by removing all folders starting with `cookiecutter-template-` or "
-                "change your working directory."
-            )
 
         path_to_transformer_root = (
             Path(__file__).parent.parent.parent.parent if self._path is None else Path(self._path).parent.parent
         )
         path_to_cookiecutter = path_to_transformer_root / "templates" / "adding_a_new_model"
+        self._execute_cookiecutter(path_to_cookiecutter)
 
-        # Execute cookiecutter
+        directory = [directory for directory in os.listdir() if directory.startswith("cookiecutter-template-")][0]
+
+        with open(f"{directory}/configuration.json", "r") as configuration_file:
+            configuration = json.load(configuration_file)
+
+        lowercase_model_name = configuration["lowercase_modelname"]
+        generate_tensorflow_pytorch_and_flax = configuration["generate_tensorflow_pytorch_and_flax"]
+
+        self._remove_file(f"{directory}/configuration.json")
+        output_pytorch, output_tensorflow, output_flax = self._get_output_options(generate_tensorflow_pytorch_and_flax)
+
+        model_dir = f"{path_to_transformer_root}/src/transformers/models/{lowercase_model_name}"
+        self._create_directories(model_dir, f"{path_to_transformer_root}/tests/models/{lowercase_model_name}")
+
+        self._move_files(
+            [(f"__init__.py", f"{model_dir}/__init__.py"), (f"configuration_{lowercase_model_name}.py", f"{model_dir}/configuration_{lowercase_model_name}.py")],
+            [f"{directory}/__init__.py", f"{directory}/configuration_{lowercase_model_name}.py"],
+        )
+
+        if output_pytorch:
+            self._move_files(
+                [
+                    (f"modeling_{lowercase_model_name}.py", f"{model_dir}/modeling_{lowercase_model_name}.py"),
+                    (f"test_modeling_{lowercase_model_name}.py", f"{path_to_transformer_root}/tests/models/{lowercase_model_name}/test_modeling_{lowercase_model_name}.py"),
+                ],
+                [f"{directory}/modeling_{lowercase_model_name}.py", f"{directory}/test_modeling_{lowercase_model_name}.py"],
+            )
+        else:
+            self._remove_files([f"{directory}/modeling_{lowercase_model_name}.py", f"{directory}/test_modeling_{lowercase_model_name}.py"])
+
+        if output_tensorflow:
+            self._move_files(
+                [
+                    (f"modeling_tf_{lowercase_model_name}.py", f"{model_dir}/modeling_tf_{lowercase_model_name}.py"),
+                    (f"test_modeling_tf_{lowercase_model_name}.py", f"{path_to_transformer_root}/tests/models/{lowercase_model_name}/test_modeling_tf_{lowercase_model_name}.py"),
+                ],
+                [f"{directory}/modeling_tf_{lowercase_model_name}.py", f"{directory}/test_modeling_tf_{lowercase_model_name}.py"],
+            )
+        else:
+            self._remove_files([f"{directory}/modeling_tf_{lowercase_model_name}.py", f"{directory}/test_modeling_tf_{lowercase_model_name}.py"])
+
+        if output_flax:
+            self._move_files(
+                [
+                    (f"modeling_flax_{lowercase_model_name}.py", f"{model_dir}/modeling_flax_{lowercase_model_name}.py"),
+                    (f"test_modeling_flax_{lowercase_model_name}.py", f"{path_to_transformer_root}/tests/models/{lowercase_model_name}/test_modeling_flax_{lowercase_model_name}.py"),
+                ],
+                [f"{directory}/modeling_flax_{lowercase_model_name}.py", f"{directory}/test_modeling_flax_{lowercase_model_name}.py"],
+            )
+        else:
+            self._remove_files([f"{directory}/modeling_flax_{lowercase_model_name}.py", f"{directory}/test_modeling_flax_{lowercase_model_name}.py"])
+
+        self._move_files(
+            [
+                (f"{lowercase_model_name}.md", f"{path_to_transformer_root}/docs/source/en/model_doc/{lowercase_model_name}.md"),
+                (f"tokenization_{lowercase_model_name}.py", f"{model_dir}/tokenization_{lowercase_model_name}.py"),
+                (f"tokenization_fast_{lowercase_model_name}.py", f"{model_dir}/tokenization_{lowercase_model_name}_fast.py"),
+            ],
+            [
+                f"{directory}/{lowercase_model_name}.md",
+                f"{directory}/tokenization_{lowercase_model_name}.py",
+                f"{directory}/tokenization_fast_{lowercase_model_name}.py",
+            ],
+        )
+
+        self._replace_in_files(f"{directory}/to_replace_{lowercase_model_name}.py")
+
+        os.rmdir(directory)
+
+    def _execute_cookiecutter(self, path_to_cookiecutter):
         if not self._testing:
             cookiecutter(str(path_to_cookiecutter))
         else:
@@ -92,168 +154,74 @@ class AddNewModelCommand(BaseTransformersCLICommand):
                 extra_context=testing_configuration,
             )
 
-        directory = [directory for directory in os.listdir() if "cookiecutter-template-" in directory[:22]][0]
+    def _get_output_options(self, generate_tensorflow_pytorch_and_flax):
+        output_pytorch = "PyTorch" == generate_tensorflow_pytorch_and_flax
+        output_tensorflow = "TensorFlow" == generate_tensorflow_pytorch_and_flax
+        output_flax = "Flax" == generate_tensorflow_pytorch_and_flax
+        return output_pytorch, output_tensorflow, output_flax
 
-        # Retrieve configuration
-        with open(directory + "/configuration.json", "r") as configuration_file:
-            configuration = json.load(configuration_file)
+    def _create_directories(self, *dirs):
+        for d in dirs:
+            os.makedirs(d, exist_ok=True)
+            with open(os.path.join(d, "__init__.py"), "w"):
+                pass
 
-        lowercase_model_name = configuration["lowercase_modelname"]
-        generate_tensorflow_pytorch_and_flax = configuration["generate_tensorflow_pytorch_and_flax"]
-        os.remove(f"{directory}/configuration.json")
+    def _remove_file(self, file_path):
+        if os.path.exists(file_path):
+            os.remove(file_path)
 
-        output_pytorch = "PyTorch" in generate_tensorflow_pytorch_and_flax
-        output_tensorflow = "TensorFlow" in generate_tensorflow_pytorch_and_flax
-        output_flax = "Flax" in generate_tensorflow_pytorch_and_flax
+    def _remove_files(self, files):
+        for file_path in files:
+            self._remove_file(file_path)
 
-        model_dir = f"{path_to_transformer_root}/src/transformers/models/{lowercase_model_name}"
-        os.makedirs(model_dir, exist_ok=True)
-        os.makedirs(f"{path_to_transformer_root}/tests/models/{lowercase_model_name}", exist_ok=True)
+    def _move_files(self, file_pairs, source_paths):
+        for (src, dest), source_path in zip(file_pairs, source_paths):
+            shutil.move(os.path.join(source_path, src), dest)
 
-        # Tests require submodules as they have parent imports
-        with open(f"{path_to_transformer_root}/tests/models/{lowercase_model_name}/__init__.py", "w"):
-            pass
+    def _replace_in_files(self, path_to_datafile):
+        with open(path_to_datafile) as datafile:
+            lines_to_copy = []
+            skip_file = False
+            skip_snippet = False
+            for line in datafile:
+                if "# To replace in: " in line and "##" not in line:
+                    file_to_replace_in = line.split('"')[1]
+                    skip_file = self._skip_units(line)
+                elif "# Below: " in line and "##" not in line:
+                    line_to_copy_below = line.split('"')[1]
+                    skip_snippet = self._skip_units(line)
+                elif "# End." in line and "##" not in line:
+                    if not skip_file and not skip_snippet:
+                        self._replace(file_to_replace_in, line_to_copy_below, lines_to_copy)
 
-        shutil.move(
-            f"{directory}/__init__.py",
-            f"{model_dir}/__init__.py",
-        )
-        shutil.move(
-            f"{directory}/configuration_{lowercase_model_name}.py",
-            f"{model_dir}/configuration_{lowercase_model_name}.py",
-        )
+                    lines_to_copy = []
+                elif "# Replace with" in line and "##" not in line:
+                    lines_to_copy = []
+                elif "##" not in line:
+                    lines_to_copy.append(line)
 
-        def remove_copy_lines(path):
-            with open(path, "r") as f:
-                lines = f.readlines()
-            with open(path, "w") as f:
-                for line in lines:
-                    if "# Copied from transformers." not in line:
-                        f.write(line)
+        os.remove(path_to_datafile)
 
-        if output_pytorch:
-            if not self._testing:
-                remove_copy_lines(f"{directory}/modeling_{lowercase_model_name}.py")
-
-            shutil.move(
-                f"{directory}/modeling_{lowercase_model_name}.py",
-                f"{model_dir}/modeling_{lowercase_model_name}.py",
-            )
-
-            shutil.move(
-                f"{directory}/test_modeling_{lowercase_model_name}.py",
-                f"{path_to_transformer_root}/tests/models/{lowercase_model_name}/test_modeling_{lowercase_model_name}.py",
-            )
-        else:
-            os.remove(f"{directory}/modeling_{lowercase_model_name}.py")
-            os.remove(f"{directory}/test_modeling_{lowercase_model_name}.py")
-
-        if output_tensorflow:
-            if not self._testing:
-                remove_copy_lines(f"{directory}/modeling_tf_{lowercase_model_name}.py")
-
-            shutil.move(
-                f"{directory}/modeling_tf_{lowercase_model_name}.py",
-                f"{model_dir}/modeling_tf_{lowercase_model_name}.py",
-            )
-
-            shutil.move(
-                f"{directory}/test_modeling_tf_{lowercase_model_name}.py",
-                f"{path_to_transformer_root}/tests/models/{lowercase_model_name}/test_modeling_tf_{lowercase_model_name}.py",
-            )
-        else:
-            os.remove(f"{directory}/modeling_tf_{lowercase_model_name}.py")
-            os.remove(f"{directory}/test_modeling_tf_{lowercase_model_name}.py")
-
-        if output_flax:
-            if not self._testing:
-                remove_copy_lines(f"{directory}/modeling_flax_{lowercase_model_name}.py")
-
-            shutil.move(
-                f"{directory}/modeling_flax_{lowercase_model_name}.py",
-                f"{model_dir}/modeling_flax_{lowercase_model_name}.py",
-            )
-
-            shutil.move(
-                f"{directory}/test_modeling_flax_{lowercase_model_name}.py",
-                f"{path_to_transformer_root}/tests/models/{lowercase_model_name}/test_modeling_flax_{lowercase_model_name}.py",
-            )
-        else:
-            os.remove(f"{directory}/modeling_flax_{lowercase_model_name}.py")
-            os.remove(f"{directory}/test_modeling_flax_{lowercase_model_name}.py")
-
-        shutil.move(
-            f"{directory}/{lowercase_model_name}.md",
-            f"{path_to_transformer_root}/docs/source/en/model_doc/{lowercase_model_name}.md",
+    def _skip_units(self, line):
+        return (
+            ("generating PyTorch" in line and not output_pytorch)
+            or ("generating TensorFlow" in line and not output_tensorflow)
+            or ("generating Flax" in line and not output_flax)
         )
 
-        shutil.move(
-            f"{directory}/tokenization_{lowercase_model_name}.py",
-            f"{model_dir}/tokenization_{lowercase_model_name}.py",
-        )
+    def _replace(self, original_file: str, line_to_copy_below: str, lines_to_copy: List[str]):
+        # Create temp file
+        with open(original_file, "r") as f:
+            lines = f.readlines()
+        with open(original_file, "w") as f:
+            for line in lines:
+                f.write(line)
+                if line_to_copy_below in line:
+                    for line_to_copy in lines_to_copy:
+                        f.write(line_to_copy)
 
-        shutil.move(
-            f"{directory}/tokenization_fast_{lowercase_model_name}.py",
-            f"{model_dir}/tokenization_{lowercase_model_name}_fast.py",
-        )
 
-        from os import fdopen, remove
-        from shutil import copymode, move
-        from tempfile import mkstemp
-
-        def replace(original_file: str, line_to_copy_below: str, lines_to_copy: List[str]):
-            # Create temp file
-            fh, abs_path = mkstemp()
-            line_found = False
-            with fdopen(fh, "w") as new_file:
-                with open(original_file) as old_file:
-                    for line in old_file:
-                        new_file.write(line)
-                        if line_to_copy_below in line:
-                            line_found = True
-                            for line_to_copy in lines_to_copy:
-                                new_file.write(line_to_copy)
-
-            if not line_found:
-                raise ValueError(f"Line {line_to_copy_below} was not found in file.")
-
-            # Copy the file permissions from the old file to the new file
-            copymode(original_file, abs_path)
-            # Remove original file
-            remove(original_file)
-            # Move new file
-            move(abs_path, original_file)
-
-        def skip_units(line):
-            return (
-                ("generating PyTorch" in line and not output_pytorch)
-                or ("generating TensorFlow" in line and not output_tensorflow)
-                or ("generating Flax" in line and not output_flax)
-            )
-
-        def replace_in_files(path_to_datafile):
-            with open(path_to_datafile) as datafile:
-                lines_to_copy = []
-                skip_file = False
-                skip_snippet = False
-                for line in datafile:
-                    if "# To replace in: " in line and "##" not in line:
-                        file_to_replace_in = line.split('"')[1]
-                        skip_file = skip_units(line)
-                    elif "# Below: " in line and "##" not in line:
-                        line_to_copy_below = line.split('"')[1]
-                        skip_snippet = skip_units(line)
-                    elif "# End." in line and "##" not in line:
-                        if not skip_file and not skip_snippet:
-                            replace(file_to_replace_in, line_to_copy_below, lines_to_copy)
-
-                        lines_to_copy = []
-                    elif "# Replace with" in line and "##" not in line:
-                        lines_to_copy = []
-                    elif "##" not in line:
-                        lines_to_copy.append(line)
-
-            remove(path_to_datafile)
-
-        replace_in_files(f"{directory}/to_replace_{lowercase_model_name}.py")
-        os.rmdir(directory)
+if __name__ == "__main__":
+    # Example usage:
+    args = Namespace(testing=False, testing_file="test_config.json", path=None)
+    add_new_model_command_factory(args).run()
