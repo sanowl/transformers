@@ -14,7 +14,6 @@
 # limitations under the License.
 
 from argparse import ArgumentParser
-
 from .add_new_model import AddNewModelCommand
 from .add_new_model_like import AddNewModelLikeCommand
 from .convert import ConvertCommand
