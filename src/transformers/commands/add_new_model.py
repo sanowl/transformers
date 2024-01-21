@@ -225,3 +225,5 @@ if __name__ == "__main__":
     # Example usage:
     args = Namespace(testing=False, testing_file="test_config.json", path=None)
     add_new_model_command_factory(args).run()
+
+    print("san")
