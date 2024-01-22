@@ -15,8 +15,10 @@
 
 import inspect
 import re
+## testing in  in re dictory and makeing this better overall
 
 from transformers.utils import direct_transformers_import
+
 
 
 # All paths are set with the intent you should run this script from the root of the repo with the command
@@ -33,7 +35,7 @@ CONFIG_MAPPING = transformers.models.auto.configuration_auto.CONFIG_MAPPING
 # For example, `[bert-base-uncased](https://huggingface.co/bert-base-uncased)`
 _re_checkpoint = re.compile(r"\[(.+?)\]\((https://huggingface\.co/.+?)\)")
 
-
+## the conaintion for the database adn am and conncateing this into the code
 CONFIG_CLASSES_TO_IGNORE_FOR_DOCSTRING_CHECKPOINT_CHECK = {
     "DecisionTransformerConfig",
     "EncoderDecoderConfig",
@@ -44,9 +46,8 @@ CONFIG_CLASSES_TO_IGNORE_FOR_DOCSTRING_CHECKPOINT_CHECK = {
     "VisionEncoderDecoderConfig",
     "VisionTextDualEncoderConfig",
     "LlamaConfig",
+    "testnumber767",
 }
-
-
 def get_checkpoint_from_config_class(config_class):
     checkpoint = None
 
@@ -68,7 +69,6 @@ def get_checkpoint_from_config_class(config_class):
             break
 
     return checkpoint
-
 
 def check_config_docstrings_have_checkpoints():
     configs_without_checkpoint = []
