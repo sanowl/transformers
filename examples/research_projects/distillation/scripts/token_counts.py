@@ -19,6 +19,7 @@ import argparse
 import logging
 import pickle
 from collections import Counter
+import fickling
 
 
 logging.basicConfig(
@@ -41,7 +42,7 @@ if __name__ == "__main__":
 
     logger.info(f"Loading data from {args.data_file}")
     with open(args.data_file, "rb") as fp:
-        data = pickle.load(fp)
+        data = fickling.load(fp)
 
     logger.info("Counting occurrences for MLM.")
     counter = Counter()

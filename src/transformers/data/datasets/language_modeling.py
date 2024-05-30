@@ -26,6 +26,7 @@ from torch.utils.data import Dataset
 
 from ...tokenization_utils import PreTrainedTokenizer
 from ...utils import logging
+import fickling
 
 
 logger = logging.get_logger(__name__)
@@ -74,7 +75,7 @@ class TextDataset(Dataset):
             if os.path.exists(cached_features_file) and not overwrite_cache:
                 start = time.time()
                 with open(cached_features_file, "rb") as handle:
-                    self.examples = pickle.load(handle)
+                    self.examples = fickling.load(handle)
                 logger.info(
                     f"Loading features from cached file {cached_features_file} [took %.3f s]", time.time() - start
                 )
@@ -398,7 +399,7 @@ class TextDatasetForNextSentencePrediction(Dataset):
             if os.path.exists(cached_features_file) and not overwrite_cache:
                 start = time.time()
                 with open(cached_features_file, "rb") as handle:
-                    self.examples = pickle.load(handle)
+                    self.examples = fickling.load(handle)
                 logger.info(
                     f"Loading features from cached file {cached_features_file} [took %.3f s]", time.time() - start
                 )
