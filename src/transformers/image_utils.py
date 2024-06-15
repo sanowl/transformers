@@ -19,7 +19,6 @@ from io import BytesIO
 from typing import TYPE_CHECKING, Dict, Iterable, List, Optional, Tuple, Union
 
 import numpy as np
-import requests
 from packaging import version
 
 from .utils import (
@@ -33,14 +32,7 @@ from .utils import (
     requires_backends,
     to_numpy,
 )
-from .utils.constants import (  # noqa: F401
-    IMAGENET_DEFAULT_MEAN,
-    IMAGENET_DEFAULT_STD,
-    IMAGENET_STANDARD_MEAN,
-    IMAGENET_STANDARD_STD,
-    OPENAI_CLIP_MEAN,
-    OPENAI_CLIP_STD,
-)
+from security import safe_requests
 
 
 if is_vision_available():
@@ -311,7 +303,7 @@ def load_image(image: Union[str, "PIL.Image.Image"], timeout: Optional[float] = 
         if image.startswith("http://") or image.startswith("https://"):
             # We need to actually check for a real protocol, otherwise it's impossible to use a local file
             # like http_huggingface_co.png
-            image = PIL.Image.open(requests.get(image, stream=True, timeout=timeout).raw)
+            image = PIL.Image.open(safe_requests.get(image, stream=True, timeout=timeout).raw)
         elif os.path.isfile(image):
             image = PIL.Image.open(image)
         else:

@@ -19,8 +19,6 @@ URL: https://github.com/salesforce/LAVIS/tree/main/projects/blip2
 """
 
 import argparse
-
-import requests
 import torch
 
 # pip3 install salesforce-lavis
@@ -41,11 +39,12 @@ from transformers import (
     set_seed,
 )
 from transformers.utils.constants import OPENAI_CLIP_MEAN, OPENAI_CLIP_STD
+from security import safe_requests
 
 
 def load_demo_image():
     url = "https://storage.googleapis.com/sfr-vision-language-research/LAVIS/assets/merlion.png"
-    image = Image.open(requests.get(url, stream=True).raw).convert("RGB")
+    image = Image.open(safe_requests.get(url, stream=True).raw).convert("RGB")
 
     return image
 

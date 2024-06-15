@@ -21,7 +21,6 @@ from io import BytesIO
 from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
 
 import numpy as np
-import requests
 
 from .dynamic_module_utils import custom_object_save
 from .feature_extraction_utils import BatchFeature as BaseBatchFeature
@@ -39,6 +38,7 @@ from .utils import (
     is_vision_available,
     logging,
 )
+from security import safe_requests
 
 
 if is_vision_available():
@@ -536,7 +536,7 @@ class ImageProcessingMixin(PushToHubMixin):
         if isinstance(image_url_or_urls, list):
             return [self.fetch_images(x) for x in image_url_or_urls]
         elif isinstance(image_url_or_urls, str):
-            response = requests.get(image_url_or_urls, stream=True, headers=headers)
+            response = safe_requests.get(image_url_or_urls, stream=True, headers=headers)
             response.raise_for_status()
             return Image.open(BytesIO(response.content))
         else:

@@ -20,12 +20,11 @@ URL: https://github.com/NVlabs/GroupViT
 """
 
 import argparse
-
-import requests
 import torch
 from PIL import Image
 
 from transformers import CLIPProcessor, GroupViTConfig, GroupViTModel
+from security import safe_requests
 
 
 def rename_key(name):
@@ -149,7 +148,7 @@ def convert_state_dict(orig_state_dict, config):
 # We will verify our results on an image of cute cats
 def prepare_img():
     url = "http://images.cocodataset.org/val2017/000000039769.jpg"
-    im = Image.open(requests.get(url, stream=True).raw)
+    im = Image.open(safe_requests.get(url, stream=True).raw)
     return im
 
 

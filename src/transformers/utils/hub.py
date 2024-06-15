@@ -70,6 +70,7 @@ from .import_utils import (
     is_training_run_on_sagemaker,
 )
 from .logging import tqdm
+from security import safe_requests
 
 
 logger = logging.get_logger(__name__)  # pylint: disable=invalid-name
@@ -192,7 +193,7 @@ def get_cached_models(cache_dir: Union[str, Path] = None) -> List[Tuple]:
 
 def define_sagemaker_information():
     try:
-        instance_data = requests.get(os.environ["ECS_CONTAINER_METADATA_URI"]).json()
+        instance_data = safe_requests.get(os.environ["ECS_CONTAINER_METADATA_URI"]).json()
         dlc_container_used = instance_data["Image"]
         dlc_tag = instance_data["Image"].split(":")[1]
     except Exception:

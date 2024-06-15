@@ -15,12 +15,11 @@
 """Convert ViT MAE checkpoints from the original repository: https://github.com/facebookresearch/mae"""
 
 import argparse
-
-import requests
 import torch
 from PIL import Image
 
 from transformers import ViTMAEConfig, ViTMAEForPreTraining, ViTMAEImageProcessor
+from security import safe_requests
 
 
 def rename_key(name):
@@ -129,7 +128,7 @@ def convert_vit_mae_checkpoint(checkpoint_url, pytorch_dump_folder_path):
 
     url = "https://user-images.githubusercontent.com/11435359/147738734-196fd92f-9260-48d5-ba7e-bf103d29364d.jpg"
 
-    image = Image.open(requests.get(url, stream=True).raw)
+    image = Image.open(safe_requests.get(url, stream=True).raw)
     image_processor = ViTMAEImageProcessor(size=config.image_size)
     inputs = image_processor(images=image, return_tensors="pt")
 

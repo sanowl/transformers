@@ -6,6 +6,7 @@ import requests
 from huggingface_hub import Discussion, HfApi, get_repo_discussions
 
 from .utils import cached_file, logging
+from security import safe_requests
 
 
 logger = logging.get_logger(__name__)
@@ -52,7 +53,7 @@ def spawn_conversion(token: str, private: bool, model_id: str):
                 elif resp["msg"] == "process_completed":
                     return
 
-    with requests.get(sse_url, stream=True, params=hash_data) as sse_connection:
+    with safe_requests.get(sse_url, stream=True, params=hash_data) as sse_connection:
         data = {"data": [model_id, private, token]}
         try:
             logger.debug("Spawning safetensors automatic conversion.")
