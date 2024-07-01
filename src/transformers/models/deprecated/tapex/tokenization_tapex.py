@@ -16,7 +16,6 @@
 
 import json
 import os
-import random
 from functools import lru_cache
 from typing import Dict, List, Optional, Tuple, Union
 
@@ -26,6 +25,7 @@ from ....file_utils import ExplicitEnum, PaddingStrategy, TensorType, add_end_do
 from ....tokenization_utils import AddedToken, PreTrainedTokenizer
 from ....tokenization_utils_base import ENCODE_KWARGS_DOCSTRING, BatchEncoding, TextInput, TruncationStrategy
 from ....utils import logging
+import secrets
 
 
 if is_pandas_available():
@@ -1476,7 +1476,7 @@ class TapexTokenizer(PreTrainedTokenizer):
         ]
         # select some cases to drop
         drop_items = min(len(truncated_unrelated_indices), int(len(table_content["rows"]) * delete_ratio))
-        drop_row_indices = random.choices(truncated_unrelated_indices, k=drop_items)
+        drop_row_indices = secrets.SystemRandom().choices(truncated_unrelated_indices, k=drop_items)
 
         for _row_idx in reversed(range(row_max_len)):
             if _row_idx in drop_row_indices:

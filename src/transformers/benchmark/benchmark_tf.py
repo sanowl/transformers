@@ -16,9 +16,6 @@
 """
     Benchmarking the library on inference and training in PyTorch.
 """
-
-
-import random
 import timeit
 from functools import wraps
 from typing import Callable, Optional
@@ -34,6 +31,7 @@ from .benchmark_utils import (
     start_memory_tracing,
     stop_memory_tracing,
 )
+import secrets
 
 
 if is_tf_available():
@@ -72,7 +70,7 @@ def run_with_tf_optimizations(do_eager_mode: bool, use_xla: bool):
 
 
 def random_input_ids(batch_size: int, sequence_length: int, vocab_size: int) -> ["tf.Tensor"]:
-    rng = random.Random()
+    rng = secrets.SystemRandom().Random()
     values = [rng.randint(0, vocab_size - 1) for i in range(batch_size * sequence_length)]
     return tf.constant(values, shape=(batch_size, sequence_length), dtype=tf.int32)
 

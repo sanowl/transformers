@@ -1,7 +1,6 @@
 import functools
 import math
 import os  # noqa: F401
-from random import choice, randint
 from time import time
 
 import datasets  # noqa: F401
@@ -17,6 +16,7 @@ from torch.utils.data import DataLoader, Dataset, RandomSampler, SequentialSampl
 from tqdm import tqdm
 
 from transformers import AdamW, AutoModel, AutoModelForSeq2SeqLM, AutoTokenizer, get_linear_schedule_with_warmup
+import secrets
 
 
 pd.set_option("display.max_colwidth", None)
@@ -106,8 +106,8 @@ class ELI5DatasetQARetriver(Dataset):
         question = example["title"]
         if self.training:
             answers = [a for i, (a, sc) in enumerate(zip(example["answers"]["text"], example["answers"]["score"]))]
-            answer_tab = choice(answers).split(" ")
-            start_idx = randint(0, max(0, len(answer_tab) - self.min_length))
+            answer_tab = secrets.choice(answers).split(" ")
+            start_idx = secrets.SystemRandom().randint(0, max(0, len(answer_tab) - self.min_length))
             answer_span = " ".join(answer_tab[start_idx:])
         else:
             answer_span = example["answers"]["text"][0]

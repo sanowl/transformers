@@ -15,7 +15,6 @@
 import json
 import os
 import pickle
-import random
 import time
 import warnings
 from typing import Dict, List, Optional
@@ -26,6 +25,7 @@ from torch.utils.data import Dataset
 
 from ...tokenization_utils import PreTrainedTokenizer
 from ...utils import logging
+import secrets
 
 
 logger = logging.get_logger(__name__)
@@ -251,8 +251,8 @@ class LineByLineWithSOPTextDataset(Dataset):
         # The `target_seq_length` is just a rough target however, whereas
         # `block_size` is a hard limit.
         target_seq_length = max_num_tokens
-        if random.random() < short_seq_prob:
-            target_seq_length = random.randint(2, max_num_tokens)
+        if secrets.SystemRandom().random() < short_seq_prob:
+            target_seq_length = secrets.SystemRandom().randint(2, max_num_tokens)
 
         # We DON'T just concatenate all of the tokens from a document into a long
         # sequence and choose an arbitrary split point because this would make the
@@ -277,7 +277,7 @@ class LineByLineWithSOPTextDataset(Dataset):
                     a_end = 1
                     # if current chunk has more than 2 sentences, pick part of it `A` (first) sentence
                     if len(current_chunk) >= 2:
-                        a_end = random.randint(1, len(current_chunk) - 1)
+                        a_end = secrets.SystemRandom().randint(1, len(current_chunk) - 1)
                     # token a
                     tokens_a = []
                     for j in range(a_end):
@@ -292,7 +292,7 @@ class LineByLineWithSOPTextDataset(Dataset):
                         continue
 
                     # switch tokens_a and tokens_b randomly
-                    if random.random() < 0.5:
+                    if secrets.SystemRandom().random() < 0.5:
                         is_next = False
                         tokens_a, tokens_b = tokens_b, tokens_a
                     else:
@@ -309,7 +309,7 @@ class LineByLineWithSOPTextDataset(Dataset):
                                 raise ValueError("Sequence length to be truncated must be no less than one")
                             # We want to sometimes truncate from the front and sometimes from the
                             # back to add more randomness and avoid biases.
-                            if random.random() < 0.5:
+                            if secrets.SystemRandom().random() < 0.5:
                                 del trunc_tokens[0]
                             else:
                                 trunc_tokens.pop()
@@ -446,8 +446,8 @@ class TextDatasetForNextSentencePrediction(Dataset):
         # The `target_seq_length` is just a rough target however, whereas
         # `block_size` is a hard limit.
         target_seq_length = max_num_tokens
-        if random.random() < self.short_seq_probability:
-            target_seq_length = random.randint(2, max_num_tokens)
+        if secrets.SystemRandom().random() < self.short_seq_probability:
+            target_seq_length = secrets.SystemRandom().randint(2, max_num_tokens)
 
         current_chunk = []  # a buffer stored current working segments
         current_length = 0
@@ -463,7 +463,7 @@ class TextDatasetForNextSentencePrediction(Dataset):
                     # (first) sentence.
                     a_end = 1
                     if len(current_chunk) >= 2:
-                        a_end = random.randint(1, len(current_chunk) - 1)
+                        a_end = secrets.SystemRandom().randint(1, len(current_chunk) - 1)
 
                     tokens_a = []
                     for j in range(a_end):
@@ -471,7 +471,7 @@ class TextDatasetForNextSentencePrediction(Dataset):
 
                     tokens_b = []
 
-                    if len(current_chunk) == 1 or random.random() < self.nsp_probability:
+                    if len(current_chunk) == 1 or secrets.SystemRandom().random() < self.nsp_probability:
                         is_random_next = True
                         target_b_length = target_seq_length - len(tokens_a)
 
@@ -480,12 +480,12 @@ class TextDatasetForNextSentencePrediction(Dataset):
                         # the random document is not the same as the document
                         # we're processing.
                         for _ in range(10):
-                            random_document_index = random.randint(0, len(self.documents) - 1)
+                            random_document_index = secrets.SystemRandom().randint(0, len(self.documents) - 1)
                             if random_document_index != doc_index:
                                 break
 
                         random_document = self.documents[random_document_index]
-                        random_start = random.randint(0, len(random_document) - 1)
+                        random_start = secrets.SystemRandom().randint(0, len(random_document) - 1)
                         for j in range(random_start, len(random_document)):
                             tokens_b.extend(random_document[j])
                             if len(tokens_b) >= target_b_length:

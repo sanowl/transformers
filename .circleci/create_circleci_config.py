@@ -16,11 +16,11 @@
 import argparse
 import copy
 import os
-import random
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
 import yaml
+import secrets
 
 
 COMMON_ENV_VARIABLES = {
@@ -189,7 +189,7 @@ class CircleCIJob:
                 else:
                     expanded_tests.append(test)
             # Avoid long tests always being collected together
-            random.shuffle(expanded_tests)
+            secrets.SystemRandom().shuffle(expanded_tests)
             tests = " ".join(expanded_tests)
 
             # Each executor to run ~10 tests

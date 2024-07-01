@@ -1,10 +1,10 @@
 import logging
-import random
 
 import ray
 
 from transformers import RagConfig, RagRetriever, RagTokenizer
 from transformers.models.rag.retrieval_rag import CustomHFIndex
+import secrets
 
 
 logger = logging.getLogger(__name__)
@@ -132,7 +132,7 @@ class RagRayDistributedRetriever(RagRetriever):
         """
         if len(self.retrieval_workers) > 0:
             # Select a random retrieval actor.
-            random_worker = self.retrieval_workers[random.randint(0, len(self.retrieval_workers) - 1)]
+            random_worker = self.retrieval_workers[secrets.SystemRandom().randint(0, len(self.retrieval_workers) - 1)]
             doc_ids, retrieved_doc_embeds, doc_dicts = ray.get(
                 random_worker.retrieve.remote(question_hidden_states, n_docs)
             )
