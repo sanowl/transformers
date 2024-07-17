@@ -216,7 +216,7 @@ def convert_openai_checkpoint(model_name=None, pytorch_dump_folder_path=None):
     """
     for file in MODEL_MAPPING[model_name]:
         if not os.path.isfile(f"{pytorch_dump_folder_path}/{file.split('/')[-1]}"):
-            r = requests.get(f"{PREFIX}{file}", allow_redirects=True)
+            r = requests.get(f"{PREFIX}{file}", allow_redirects=True, timeout=60)
             os.makedirs(f"{pytorch_dump_folder_path}/", exist_ok=True)
             open(f"{pytorch_dump_folder_path}/{file.split('/')[-1]}", "wb").write(r.content)
 

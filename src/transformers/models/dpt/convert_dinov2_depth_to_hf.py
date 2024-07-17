@@ -184,7 +184,7 @@ def rename_key(dct, old, new):
 # We will verify our results on an image of cute cats
 def prepare_img():
     url = "https://dl.fbaipublicfiles.com/dinov2/images/example.jpg"
-    im = Image.open(requests.get(url, stream=True).raw)
+    im = Image.open(requests.get(url, stream=True, timeout=60).raw)
     return im
 
 

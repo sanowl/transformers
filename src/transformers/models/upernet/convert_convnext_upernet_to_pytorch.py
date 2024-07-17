@@ -149,7 +149,7 @@ def convert_upernet_checkpoint(model_name, pytorch_dump_folder_path, push_to_hub
 
     # verify on image
     url = "https://huggingface.co/datasets/hf-internal-testing/fixtures_ade20k/resolve/main/ADE_val_00000001.jpg"
-    image = Image.open(requests.get(url, stream=True).raw).convert("RGB")
+    image = Image.open(requests.get(url, stream=True, timeout=60).raw).convert("RGB")
 
     processor = SegformerImageProcessor()
     pixel_values = processor(image, return_tensors="pt").pixel_values
