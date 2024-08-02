@@ -19,6 +19,7 @@ import requests
 
 from ..utils import add_end_docstrings, is_torch_available, is_torchaudio_available, logging
 from .base import PIPELINE_INIT_ARGS, Pipeline
+from security import safe_command
 
 
 if is_torch_available():
@@ -51,7 +52,7 @@ def ffmpeg_read(bpayload: bytes, sampling_rate: int) -> np.array:
     ]
 
     try:
-        ffmpeg_process = subprocess.Popen(ffmpeg_command, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        ffmpeg_process = safe_command.run(subprocess.Popen, ffmpeg_command, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
     except FileNotFoundError:
         raise ValueError("ffmpeg was not found but is required to load audio files from filename")
     output_stream = ffmpeg_process.communicate(bpayload)
