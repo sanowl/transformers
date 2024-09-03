@@ -82,7 +82,7 @@ def format_mrpc(data_dir, path_to_data):
     with open(mrpc_train_file, encoding="utf8") as data_fh, open(
         os.path.join(mrpc_dir, "train.tsv"), "w", encoding="utf8"
     ) as train_fh, open(os.path.join(mrpc_dir, "dev.tsv"), "w", encoding="utf8") as dev_fh:
-        header = data_fh.readline()
+        header = data_fh.readline(5_000_000)
         train_fh.write(header)
         dev_fh.write(header)
         for row in data_fh:
@@ -95,7 +95,7 @@ def format_mrpc(data_dir, path_to_data):
     with open(mrpc_test_file, encoding="utf8") as data_fh, open(
         os.path.join(mrpc_dir, "test.tsv"), "w", encoding="utf8"
     ) as test_fh:
-        header = data_fh.readline()
+        header = data_fh.readline(5_000_000)
         test_fh.write("index\t#1 ID\t#2 ID\t#1 String\t#2 String\n")
         for idx, row in enumerate(data_fh):
             label, id1, id2, s1, s2 = row.strip().split("\t")
