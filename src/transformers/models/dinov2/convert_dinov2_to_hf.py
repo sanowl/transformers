@@ -21,8 +21,6 @@ URL: https://github.com/facebookresearch/dinov2/tree/main
 import argparse
 import json
 from pathlib import Path
-
-import requests
 import torch
 import torch.nn as nn
 from huggingface_hub import hf_hub_download
@@ -32,6 +30,7 @@ from torchvision import transforms
 from transformers import BitImageProcessor, Dinov2Config, Dinov2ForImageClassification, Dinov2Model
 from transformers.image_utils import IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD, PILImageResampling
 from transformers.utils import logging
+from security import safe_requests
 
 
 logging.set_verbosity_info()
@@ -139,7 +138,7 @@ def read_in_q_k_v(state_dict, config):
 # We will verify our results on an image of cute cats
 def prepare_img():
     url = "http://images.cocodataset.org/val2017/000000039769.jpg"
-    image = Image.open(requests.get(url, stream=True).raw)
+    image = Image.open(safe_requests.get(url, stream=True).raw)
     return image
 
 
@@ -192,7 +191,7 @@ def convert_dinov2_checkpoint(model_name, pytorch_dump_folder_path, push_to_hub=
 
     # load image
     url = "http://images.cocodataset.org/val2017/000000039769.jpg"
-    image = Image.open(requests.get(url, stream=True).raw).convert("RGB")
+    image = Image.open(safe_requests.get(url, stream=True).raw).convert("RGB")
 
     # preprocess image
     transformations = transforms.Compose(

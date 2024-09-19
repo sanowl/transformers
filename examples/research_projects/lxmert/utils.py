@@ -42,6 +42,7 @@ from huggingface_hub.utils import insecure_hashlib
 from PIL import Image
 from tqdm.auto import tqdm
 from yaml import Loader, dump, load
+from security import safe_requests
 
 
 try:
@@ -268,7 +269,7 @@ def http_get(
     headers = {"user-agent": ua}
     if resume_size > 0:
         headers["Range"] = "bytes=%d-" % (resume_size,)
-    response = requests.get(url, stream=True, proxies=proxies, headers=headers)
+    response = safe_requests.get(url, stream=True, proxies=proxies, headers=headers)
     if response.status_code == 416:  # Range not satisfiable
         return
     content_length = response.headers.get("Content-Length")
@@ -495,7 +496,7 @@ def get_data(query, delim=","):
         with open(query) as f:
             data = eval(f.read())
     else:
-        req = requests.get(query)
+        req = safe_requests.get(query)
         try:
             data = requests.json()
         except Exception:
@@ -510,7 +511,7 @@ def get_data(query, delim=","):
 
 
 def get_image_from_url(url):
-    response = requests.get(url)
+    response = safe_requests.get(url)
     img = np.array(Image.open(BytesIO(response.content)))
     return img
 

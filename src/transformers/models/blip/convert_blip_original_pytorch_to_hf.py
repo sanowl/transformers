@@ -15,8 +15,6 @@
 
 import argparse
 import re
-
-import requests
 import torch
 
 # git clone https://github.com/salesforce/BLIP.git
@@ -34,11 +32,12 @@ from transformers import (
     BlipForImageTextRetrieval,
     BlipForQuestionAnswering,
 )
+from security import safe_requests
 
 
 def load_demo_image(image_size, device):
     img_url = "https://storage.googleapis.com/sfr-vision-language-research/BLIP/demo.jpg"
-    raw_image = Image.open(requests.get(img_url, stream=True).raw).convert("RGB")
+    raw_image = Image.open(safe_requests.get(img_url, stream=True).raw).convert("RGB")
 
     transform = transforms.Compose(
         [

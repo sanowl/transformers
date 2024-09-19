@@ -22,12 +22,11 @@ from dataclasses import dataclass
 from pathlib import Path
 from pprint import pformat
 from typing import Any, Dict, Iterator, List, Set, Tuple
-
-import requests
 import torch
 import torchvision.transforms as T
 from PIL import Image
 from torch import Tensor, nn
+from security import safe_requests
 
 
 try:
@@ -92,7 +91,7 @@ class TrackedStateDict:
 # Image to verify the result
 def prepare_img():
     url = "https://praeclarumjj3.github.io/files/coco.jpeg"
-    img_data = requests.get(url, stream=True).raw
+    img_data = safe_requests.get(url, stream=True).raw
     im = Image.open(img_data)
     return im
 

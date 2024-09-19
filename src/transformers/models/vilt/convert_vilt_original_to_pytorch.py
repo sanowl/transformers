@@ -18,8 +18,6 @@
 import argparse
 import json
 from pathlib import Path
-
-import requests
 import torch
 from huggingface_hub import hf_hub_download
 from PIL import Image
@@ -35,6 +33,7 @@ from transformers import (
     ViltProcessor,
 )
 from transformers.utils import logging
+from security import safe_requests
 
 
 logging.set_verbosity_info()
@@ -229,8 +228,8 @@ def convert_vilt_checkpoint(checkpoint_url, pytorch_dump_folder_path):
 
     # Forward pass on example inputs (image + text)
     if nlvr_model:
-        image1 = Image.open(requests.get("https://lil.nlp.cornell.edu/nlvr/exs/ex0_0.jpg", stream=True).raw)
-        image2 = Image.open(requests.get("https://lil.nlp.cornell.edu/nlvr/exs/ex0_0.jpg", stream=True).raw)
+        image1 = Image.open(safe_requests.get("https://lil.nlp.cornell.edu/nlvr/exs/ex0_0.jpg", stream=True).raw)
+        image2 = Image.open(safe_requests.get("https://lil.nlp.cornell.edu/nlvr/exs/ex0_0.jpg", stream=True).raw)
         text = (
             "The left image contains twice the number of dogs as the right image, and at least two dogs in total are"
             " standing."
@@ -243,7 +242,7 @@ def convert_vilt_checkpoint(checkpoint_url, pytorch_dump_folder_path):
             pixel_values_2=encoding_2.pixel_values,
         )
     else:
-        image = Image.open(requests.get("http://images.cocodataset.org/val2017/000000039769.jpg", stream=True).raw)
+        image = Image.open(safe_requests.get("http://images.cocodataset.org/val2017/000000039769.jpg", stream=True).raw)
         if mlm_model:
             text = "a bunch of [MASK] laying on a [MASK]."
         else:

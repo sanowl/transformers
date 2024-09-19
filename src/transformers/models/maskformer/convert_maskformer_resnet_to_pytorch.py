@@ -20,14 +20,13 @@ import argparse
 import json
 import pickle
 from pathlib import Path
-
-import requests
 import torch
 from huggingface_hub import hf_hub_download
 from PIL import Image
 
 from transformers import MaskFormerConfig, MaskFormerForInstanceSegmentation, MaskFormerImageProcessor, ResNetConfig
 from transformers.utils import logging
+from security import safe_requests
 
 
 logging.set_verbosity_info()
@@ -254,7 +253,7 @@ def read_in_decoder_q_k_v(state_dict, config):
 # We will verify our results on an image of cute cats
 def prepare_img() -> torch.Tensor:
     url = "http://images.cocodataset.org/val2017/000000039769.jpg"
-    im = Image.open(requests.get(url, stream=True).raw)
+    im = Image.open(safe_requests.get(url, stream=True).raw)
     return im
 
 

@@ -1,10 +1,9 @@
 from io import BytesIO
 from typing import List, Union
 
-import requests
-
 from ..utils import add_end_docstrings, is_decord_available, is_torch_available, logging, requires_backends
 from .base import PIPELINE_INIT_ARGS, Pipeline
+from security import safe_requests
 
 
 if is_decord_available():
@@ -88,7 +87,7 @@ class VideoClassificationPipeline(Pipeline):
             num_frames = self.model.config.num_frames
 
         if video.startswith("http://") or video.startswith("https://"):
-            video = BytesIO(requests.get(video).content)
+            video = BytesIO(safe_requests.get(video).content)
 
         videoreader = VideoReader(video)
         videoreader.seek(0)

@@ -21,7 +21,6 @@ import argparse
 from pathlib import Path
 
 import numpy as np
-import requests
 import torch
 from huggingface_hub import hf_hub_download
 from PIL import Image
@@ -37,6 +36,7 @@ from transformers import (
     VideoMAEImageProcessor,
 )
 from transformers.utils import logging
+from security import safe_requests
 
 
 logging.set_verbosity_info()
@@ -188,7 +188,7 @@ def prepare_img(model_name):
         image = Image.open(filepath).convert("RGB")
     else:
         url = "http://images.cocodataset.org/val2017/000000039769.jpg"
-        image = Image.open(requests.get(url, stream=True).raw)
+        image = Image.open(safe_requests.get(url, stream=True).raw)
 
     return image
 

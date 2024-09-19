@@ -18,8 +18,6 @@
 import argparse
 import json
 from pathlib import Path
-
-import requests
 import timm
 import torch
 from huggingface_hub import hf_hub_download
@@ -27,6 +25,7 @@ from PIL import Image
 
 from transformers import DeiTConfig, DeiTForImageClassificationWithTeacher, DeiTImageProcessor
 from transformers.utils import logging
+from security import safe_requests
 
 
 logging.set_verbosity_info()
@@ -124,7 +123,7 @@ def rename_key(dct, old, new):
 # We will verify our results on an image of cute cats
 def prepare_img():
     url = "http://images.cocodataset.org/val2017/000000039769.jpg"
-    im = Image.open(requests.get(url, stream=True).raw)
+    im = Image.open(safe_requests.get(url, stream=True).raw)
     return im
 
 

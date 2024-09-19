@@ -15,12 +15,12 @@ from collections import defaultdict
 from typing import TYPE_CHECKING, Dict, Optional, Union
 
 import numpy as np
-import requests
 
 from ..tokenization_utils import PreTrainedTokenizer
 from ..utils import is_torch_available, is_torchaudio_available, logging
 from .audio_utils import ffmpeg_read
 from .base import ChunkPipeline
+from security import safe_requests
 
 
 if TYPE_CHECKING:
@@ -360,7 +360,7 @@ class AutomaticSpeechRecognitionPipeline(ChunkPipeline):
             if inputs.startswith("http://") or inputs.startswith("https://"):
                 # We need to actually check for a real protocol, otherwise it's impossible to use a local file
                 # like http_huggingface_co.png
-                inputs = requests.get(inputs).content
+                inputs = safe_requests.get(inputs).content
             else:
                 with open(inputs, "rb") as f:
                     inputs = f.read()
