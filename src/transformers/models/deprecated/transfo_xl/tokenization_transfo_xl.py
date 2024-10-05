@@ -37,6 +37,7 @@ from ....utils import (
     strtobool,
     torch_only_method,
 )
+import fickling
 
 
 if is_sacremoses_available():
@@ -222,7 +223,7 @@ class TransfoXLTokenizer(PreTrainedTokenizer):
                         "`TRUST_REMOTE_CODE` to `True` to allow it."
                     )
                 with open(pretrained_vocab_file, "rb") as f:
-                    vocab_dict = pickle.load(f)
+                    vocab_dict = fickling.load(f)
 
                 # Loading a torch-saved transfo-xl vocab dict with pickle results in an integer
                 # Entering this if statement means that we tried to load a torch-saved file with pickle, and we failed.
@@ -807,7 +808,7 @@ def get_lm_corpus(datadir, dataset):
                 "you can set the environment variable `TRUST_REMOTE_CODE` to `True` to allow it."
             )
         with open(fn, "rb") as fp:
-            corpus = pickle.load(fp)
+            corpus = fickling.load(fp)
     else:
         logger.info(f"Producing dataset {dataset}...")
         kwargs = {}

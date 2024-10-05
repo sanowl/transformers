@@ -36,6 +36,7 @@ from torch.utils.data import Dataset, Sampler
 from transformers import BartTokenizer, EvalPrediction, PreTrainedTokenizer, T5Tokenizer
 from transformers.models.bart.modeling_bart import shift_tokens_right
 from transformers.utils import cached_property
+import fickling
 
 
 try:
@@ -446,7 +447,7 @@ def use_task_specific_params(model, task):
 def pickle_load(path):
     """pickle.load(path)"""
     with open(path, "rb") as f:
-        return pickle.load(f)
+        return fickling.load(f)
 
 
 def pickle_save(obj, path):
