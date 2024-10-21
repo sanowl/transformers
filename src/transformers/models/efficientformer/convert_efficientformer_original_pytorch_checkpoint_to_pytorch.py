@@ -115,7 +115,7 @@ def convert_torch_checkpoint(checkpoint, num_meta4D_last_stage):
 # We will verify our results on a COCO image
 def prepare_img():
     url = "http://images.cocodataset.org/val2017/000000039769.jpg"
-    image = Image.open(requests.get(url, stream=True).raw)
+    image = Image.open(requests.get(url, stream=True, timeout=60).raw)
 
     return image
 

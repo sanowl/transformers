@@ -640,7 +640,7 @@ class HfAgent(Agent):
             "parameters": {"max_new_tokens": 200, "return_full_text": False, "stop": stop},
         }
 
-        response = requests.post(self.url_endpoint, json=inputs, headers=headers)
+        response = requests.post(self.url_endpoint, json=inputs, headers=headers, timeout=60)
         if response.status_code == 429:
             logger.info("Getting rate-limited, waiting a tiny bit before trying again.")
             time.sleep(1)

@@ -268,7 +268,7 @@ def http_get(
     headers = {"user-agent": ua}
     if resume_size > 0:
         headers["Range"] = "bytes=%d-" % (resume_size,)
-    response = requests.get(url, stream=True, proxies=proxies, headers=headers)
+    response = requests.get(url, stream=True, proxies=proxies, headers=headers, timeout=60)
     if response.status_code == 416:  # Range not satisfiable
         return
     content_length = response.headers.get("Content-Length")
@@ -495,7 +495,7 @@ def get_data(query, delim=","):
         with open(query) as f:
             data = eval(f.read())
     else:
-        req = requests.get(query)
+        req = requests.get(query, timeout=60)
         try:
             data = requests.json()
         except Exception:
@@ -510,7 +510,7 @@ def get_data(query, delim=","):
 
 
 def get_image_from_url(url):
-    response = requests.get(url)
+    response = requests.get(url, timeout=60)
     img = np.array(Image.open(BytesIO(response.content)))
     return img
 

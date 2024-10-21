@@ -48,7 +48,7 @@ from transformers.utils.constants import OPENAI_CLIP_MEAN, OPENAI_CLIP_STD
 
 def load_demo_image():
     url = "https://raw.githubusercontent.com/salesforce/LAVIS/main/docs/_static/Confusing-Pictures.jpg"
-    image = Image.open(requests.get(url, stream=True).raw).convert("RGB")
+    image = Image.open(requests.get(url, stream=True, timeout=60).raw).convert("RGB")
 
     return image
 

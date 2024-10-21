@@ -21,7 +21,7 @@ def get_daily_ci_runs(token, num_runs=7):
     # On `main` branch + event being `schedule` + not returning PRs + only `num_runs` results
     url += f"?branch=main&event=schedule&exclude_pull_requests=true&per_page={num_runs}"
 
-    result = requests.get(url, headers=headers).json()
+    result = requests.get(url, headers=headers, timeout=60).json()
 
     return result["workflow_runs"]
 
