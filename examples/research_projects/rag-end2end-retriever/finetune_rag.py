@@ -6,7 +6,6 @@ import json
 import logging
 import multiprocessing
 import os
-import random
 import shutil
 import sys
 import time
@@ -37,6 +36,7 @@ from transformers import (
 )
 from transformers import logging as transformers_logging
 from transformers.integrations import is_ray_available
+import secrets
 
 
 if is_ray_available():
@@ -288,7 +288,7 @@ class GenerativeQAModule(BaseTransformer):
                     processes = []
 
                     if len(free_gpu_list) > self.custom_config.index_gpus:
-                        cuda_devices = random.sample(free_gpu_list, self.custom_config.index_gpus)
+                        cuda_devices = secrets.SystemRandom().sample(free_gpu_list, self.custom_config.index_gpus)
                     else:
                         cuda_devices = free_gpu_list
 

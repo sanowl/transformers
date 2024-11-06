@@ -23,7 +23,6 @@ import json
 import logging
 import math
 import os
-import random
 from pathlib import Path
 
 import datasets
@@ -54,6 +53,7 @@ from transformers import (
 )
 from transformers.utils import check_min_version, send_example_telemetry
 from transformers.utils.versions import require_version
+import secrets
 
 
 # Will error if the minimal version of Transformers is not installed. Remove at your own risks.
@@ -666,7 +666,7 @@ def main():
                 predict_dataset = predict_dataset.select(range(args.max_predict_samples))
 
     # Log a few random samples from the training set:
-    for index in random.sample(range(len(train_dataset)), 3):
+    for index in secrets.SystemRandom().sample(range(len(train_dataset)), 3):
         logger.info(f"Sample {index} of the training set: {train_dataset[index]}.")
 
     # DataLoaders creation:

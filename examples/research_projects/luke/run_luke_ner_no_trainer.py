@@ -22,7 +22,6 @@ import argparse
 import logging
 import math
 import os
-import random
 from pathlib import Path
 
 import datasets
@@ -46,6 +45,7 @@ from transformers import (
     set_seed,
 )
 from transformers.utils.versions import require_version
+import secrets
 
 
 logger = logging.getLogger(__name__)
@@ -529,7 +529,7 @@ def main():
     eval_dataset = processed_raw_datasets["validation"]
 
     # Log a few random samples from the training set:
-    for index in random.sample(range(len(train_dataset)), 3):
+    for index in secrets.SystemRandom().sample(range(len(train_dataset)), 3):
         logger.info(f"Sample {index} of the training set: {train_dataset[index]}.")
 
     # DataLoaders creation:

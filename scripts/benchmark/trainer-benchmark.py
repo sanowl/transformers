@@ -117,6 +117,7 @@ import torch
 from tqdm import tqdm
 
 import transformers
+import secrets
 
 
 nan = float("nan")
@@ -202,13 +203,12 @@ def process_run_single(id, cmd, variation, output_dir, target_metric_key, metric
     # This is useful for debugging the output formatting quickly - we can remove it later once
     # everybody is happy with the output
     if 0:
-        import random
         from time import sleep
 
         sleep(0)
         return dict(
-            {k: random.uniform(0, 100) for k in metric_keys},
-            **{target_metric_key: random.choice([nan, 10.31, 100.2, 55.6666, 222.22222222])},
+            {k: secrets.SystemRandom().uniform(0, 100) for k in metric_keys},
+            **{target_metric_key: secrets.choice([nan, 10.31, 100.2, 55.6666, 222.22222222])},
         )
 
     result = subprocess.run(cmd, capture_output=True, text=True)

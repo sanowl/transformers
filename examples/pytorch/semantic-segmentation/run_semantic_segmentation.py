@@ -16,7 +16,6 @@
 import json
 import logging
 import os
-import random
 import sys
 import warnings
 from dataclasses import dataclass, field
@@ -45,6 +44,7 @@ from transformers import (
 from transformers.trainer_utils import get_last_checkpoint
 from transformers.utils import check_min_version, send_example_telemetry
 from transformers.utils.versions import require_version
+import secrets
 
 
 """ Finetuning any 🤗 Transformers model supported by AutoModelForSemanticSegmentation for semantic segmentation leveraging the Trainer API."""
@@ -102,7 +102,7 @@ class RandomResize:
         self.max_size = max_size
 
     def __call__(self, image, target):
-        size = random.randint(self.min_size, self.max_size)
+        size = secrets.SystemRandom().randint(self.min_size, self.max_size)
         image = functional.resize(image, size)
         target = functional.resize(target, size, interpolation=transforms.InterpolationMode.NEAREST)
         return image, target
@@ -126,7 +126,7 @@ class RandomHorizontalFlip:
         self.flip_prob = flip_prob
 
     def __call__(self, image, target):
-        if random.random() < self.flip_prob:
+        if secrets.SystemRandom().random() < self.flip_prob:
             image = functional.hflip(image)
             target = functional.hflip(target)
         return image, target

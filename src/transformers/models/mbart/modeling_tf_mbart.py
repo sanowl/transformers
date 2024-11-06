@@ -16,8 +16,6 @@
 
 
 from __future__ import annotations
-
-import random
 from typing import Optional, Tuple, Union
 
 import tensorflow as tf
@@ -48,6 +46,7 @@ from ...utils import (
     replace_return_docstrings,
 )
 from .configuration_mbart import MBartConfig
+import secrets
 
 
 logger = logging.get_logger(__name__)
@@ -838,7 +837,7 @@ class TFMBartEncoder(tf.keras.layers.Layer):
             if output_hidden_states:
                 encoder_states = encoder_states + (hidden_states,)
             # add LayerDrop (see https://arxiv.org/abs/1909.11556 for description)
-            dropout_probability = random.uniform(0, 1)
+            dropout_probability = secrets.SystemRandom().uniform(0, 1)
             if training and (dropout_probability < self.layerdrop):  # skip the layer
                 continue
 
@@ -1069,7 +1068,7 @@ class TFMBartDecoder(tf.keras.layers.Layer):
             # add LayerDrop (see https://arxiv.org/abs/1909.11556 for description)
             if output_hidden_states:
                 all_hidden_states += (hidden_states,)
-            dropout_probability = random.uniform(0, 1)
+            dropout_probability = secrets.SystemRandom().uniform(0, 1)
 
             if training and (dropout_probability < self.layerdrop):
                 continue

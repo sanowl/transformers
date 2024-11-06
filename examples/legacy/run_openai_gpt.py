@@ -32,7 +32,6 @@ import argparse
 import csv
 import logging
 import os
-import random
 
 import numpy as np
 import torch
@@ -47,6 +46,7 @@ from transformers import (
     OpenAIGPTTokenizer,
     get_linear_schedule_with_warmup,
 )
+import secrets
 
 
 logging.basicConfig(
@@ -156,7 +156,7 @@ def main():
         ptvsd.enable_attach(address=(args.server_ip, args.server_port), redirect_output=True)
         ptvsd.wait_for_attach()
 
-    random.seed(args.seed)
+    secrets.SystemRandom().seed(args.seed)
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
     torch.cuda.manual_seed_all(args.seed)

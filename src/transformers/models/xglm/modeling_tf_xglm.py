@@ -18,7 +18,6 @@
 from __future__ import annotations
 
 import math
-import random
 from typing import Any, Optional, Tuple, Union
 
 import numpy as np
@@ -46,6 +45,7 @@ from ...modeling_tf_utils import (
 from ...tf_utils import check_embeddings_within_bounds, shape_list, stable_softmax
 from ...utils import logging
 from .configuration_xglm import XGLMConfig
+import secrets
 
 
 logger = logging.get_logger(__name__)
@@ -607,7 +607,7 @@ class TFXGLMMainLayer(tf.keras.layers.Layer):
             if output_hidden_states:
                 all_hidden_states += (hidden_states,)
 
-            dropout_probability = random.uniform(0, 1)
+            dropout_probability = secrets.SystemRandom().uniform(0, 1)
             if training and (dropout_probability < self.layerdrop):
                 continue
 

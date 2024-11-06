@@ -20,7 +20,6 @@ import json
 import logging
 import math
 import os
-import random
 import shutil
 from typing import List, Optional
 
@@ -44,6 +43,7 @@ from transformers import (
 )
 from transformers.file_utils import ExplicitEnum
 from transformers.trainer_utils import IntervalStrategy
+import secrets
 
 
 logger = logging.getLogger(__name__)
@@ -690,7 +690,7 @@ def finetune(accelerator, model_name_or_path, train_file, output_dir, **kwargs):
     infer_dataset = processed_datasets[Split.INFER.value] if Split.INFER.value in processed_datasets else None
 
     # Log a few random samples from the training set:
-    for index in random.sample(range(len(train_dataset)), 3):
+    for index in secrets.SystemRandom().sample(range(len(train_dataset)), 3):
         logger.info("Sample %d of the training set: %s.", index, train_dataset[index])
 
     # DataLoaders creation:

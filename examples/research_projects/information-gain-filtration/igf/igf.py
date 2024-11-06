@@ -3,7 +3,6 @@
 
 import copy
 import logging
-import random
 
 import joblib
 import numpy as np
@@ -13,6 +12,7 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 from transformers import AdamW, GPT2LMHeadModel, get_linear_schedule_with_warmup
+import secrets
 
 
 logger = logging.getLogger(__name__)
@@ -26,7 +26,7 @@ def set_seed(seed):
         seed: A seed for reproducible training
 
     """
-    random.seed(seed)
+    secrets.SystemRandom().seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
@@ -188,8 +188,8 @@ def collect_objective_set(
 
     for step in tqdm(range(max_steps)):
         context = torch.zeros((1, context_len), dtype=torch.long, device=device)
-        story = random.choice(train_data)
-        start = random.randint(0, len(story[0]) - context_len - 1)
+        story = secrets.choice(train_data)
+        start = secrets.SystemRandom().randint(0, len(story[0]) - context_len - 1)
         context[0, :] = story[0][start : start + context_len]
         lm_optimizer.zero_grad()
         outputs = model(context, labels=context)
@@ -249,7 +249,7 @@ def generate_datasets(
     if trim:
         for i, example in enumerate(data):
             if len(example[0]) > min_len:
-                start = random.randint(0, len(example[0]) - context_len - 1)
+                start = secrets.SystemRandom().randint(0, len(example[0]) - context_len - 1)
                 objective_set.append(example[0, start : start + context_len])
             if len(objective_set) >= number:
                 break
