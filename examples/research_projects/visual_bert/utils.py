@@ -20,7 +20,6 @@ import copy
 import fnmatch
 import json
 import os
-import pickle as pkl
 import shutil
 import sys
 import tarfile
@@ -42,6 +41,7 @@ from huggingface_hub.utils import insecure_hashlib
 from PIL import Image
 from tqdm.auto import tqdm
 from yaml import Loader, dump, load
+import fickling
 
 
 try:
@@ -92,7 +92,7 @@ def load_labels(objs=OBJECTS, attrs=ATTRIBUTES):
 def load_checkpoint(ckp):
     r = OrderedDict()
     with open(ckp, "rb") as f:
-        ckp = pkl.load(f)["model"]
+        ckp = fickling.load(f)["model"]
     for k in copy.deepcopy(list(ckp.keys())):
         v = ckp.pop(k)
         if isinstance(v, np.ndarray):
@@ -521,7 +521,7 @@ def load_frcnn_pkl_from_url(url):
     if fn not in os.listdir(os.getcwd()):
         wget.download(url)
     with open(fn, "rb") as stream:
-        weights = pkl.load(stream)
+        weights = fickling.load(stream)
     model = weights.pop("model")
     new = {}
     for k, v in model.items():

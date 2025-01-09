@@ -70,6 +70,7 @@ from .utils import (
     working_or_temp_dir,
 )
 from .utils.hub import convert_file_size_to_int, get_checkpoint_shard_files
+import fickling
 
 
 if is_safetensors_available():
@@ -1381,7 +1382,7 @@ class TFPreTrainedModel(tf.keras.Model, TFModelUtilsMixin, TFGenerationMixin, Pu
         # The optimizer state includes the iteration count, so learning rate schedules should resume as normal too.
         self.load_weights(weights_file)
         with open(extra_data_file, "rb") as f:
-            extra_data = pickle.load(f)
+            extra_data = fickling.load(f)
         self.optimizer.set_weights(extra_data["optimizer_state"])
 
         # Finally, return the epoch number from the checkpoint. This isn't a property of the model, so we can't
