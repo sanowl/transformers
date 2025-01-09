@@ -15,7 +15,6 @@
 """RAG Retriever model implementation."""
 
 import os
-import pickle
 import time
 from typing import Iterable, List, Optional, Tuple
 
@@ -26,6 +25,7 @@ from ...tokenization_utils_base import BatchEncoding
 from ...utils import cached_file, is_datasets_available, is_faiss_available, logging, requires_backends, strtobool
 from .configuration_rag import RagConfig
 from .tokenization_rag import RagTokenizer
+import fickling
 
 
 if is_datasets_available():
@@ -139,7 +139,7 @@ class LegacyIndex(Index):
                 "you can set the environment variable `TRUST_REMOTE_CODE` to `True` to allow it."
             )
         with open(passages_path, "rb") as passages_file:
-            passages = pickle.load(passages_file)
+            passages = fickling.load(passages_file)
         return passages
 
     def _deserialize_index(self):
@@ -155,7 +155,7 @@ class LegacyIndex(Index):
                 "you can set the environment variable `TRUST_REMOTE_CODE` to `True` to allow it."
             )
         with open(resolved_meta_path, "rb") as metadata_file:
-            self.index_id_to_db_id = pickle.load(metadata_file)
+            self.index_id_to_db_id = fickling.load(metadata_file)
         assert (
             len(self.index_id_to_db_id) == self.index.ntotal
         ), "Deserialized index_id_to_db_id should match faiss index size"
