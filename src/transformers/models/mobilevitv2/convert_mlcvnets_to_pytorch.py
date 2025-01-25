@@ -226,7 +226,7 @@ def remove_unused_keys(state_dict):
 def prepare_img():
     url = "http://images.cocodataset.org/val2017/000000039769.jpg"
     # url = "https://cdn.britannica.com/86/141086-050-9D7C75EE/Gulfstream-G450-business-jet-passengers.jpg"
-    im = Image.open(requests.get(url, stream=True).raw)
+    im = Image.open(requests.get(url, stream=True, timeout=60).raw)
     return im
 
 

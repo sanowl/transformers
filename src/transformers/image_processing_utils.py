@@ -536,7 +536,7 @@ class ImageProcessingMixin(PushToHubMixin):
         if isinstance(image_url_or_urls, list):
             return [self.fetch_images(x) for x in image_url_or_urls]
         elif isinstance(image_url_or_urls, str):
-            response = requests.get(image_url_or_urls, stream=True, headers=headers)
+            response = requests.get(image_url_or_urls, stream=True, headers=headers, timeout=60)
             response.raise_for_status()
             return Image.open(BytesIO(response.content))
         else:
