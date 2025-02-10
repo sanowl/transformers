@@ -20,7 +20,6 @@ import argparse
 import glob
 import logging
 import os
-import random
 import timeit
 
 import numpy as np
@@ -46,6 +45,7 @@ from transformers.data.metrics.squad_metrics import (
     squad_evaluate,
 )
 from transformers.data.processors.squad import SquadResult, SquadV1Processor, SquadV2Processor
+import secrets
 
 
 try:
@@ -63,7 +63,7 @@ MODEL_CLASSES = {
 
 
 def set_seed(args):
-    random.seed(args.seed)
+    secrets.SystemRandom().seed(args.seed)
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
     if args.n_gpu > 0:

@@ -20,7 +20,6 @@ import inspect
 import math
 import operator
 import os
-import random
 import warnings
 from typing import Any, Callable, Dict, List, Optional, Type, Union
 
@@ -60,6 +59,7 @@ from ..utils import (
     is_peft_available,
     is_torch_fx_available,
 )
+import secrets
 
 
 if is_peft_available():
@@ -721,9 +721,9 @@ def _gen_constructor_wrapper(target):
 def _generate_random_int(low: int = 10, high: int = 20, forbidden_values: Optional[List[int]] = None):
     if forbidden_values is None:
         forbidden_values = []
-    value = random.randint(low, high)
+    value = secrets.SystemRandom().randint(low, high)
     while value in forbidden_values:
-        value = random.randint(low, high)
+        value = secrets.SystemRandom().randint(low, high)
     return value
 
 

@@ -23,7 +23,6 @@ import json
 import logging
 import math
 import os
-import random
 from pathlib import Path
 
 import datasets
@@ -53,6 +52,7 @@ from transformers import (
 )
 from transformers.utils import check_min_version, is_offline_mode, send_example_telemetry
 from transformers.utils.versions import require_version
+import secrets
 
 
 # Will error if the minimal version of Transformers is not installed. Remove at your own risks.
@@ -529,7 +529,7 @@ def main():
         )
 
     # Log a few random samples from the training set:
-    for index in random.sample(range(len(train_dataset)), 1):
+    for index in secrets.SystemRandom().sample(range(len(train_dataset)), 1):
         logger.info(f"Sample {index} of the training set: {train_dataset[index]}.")
 
     label_pad_token_id = -100 if args.ignore_pad_token_for_loss else tokenizer.pad_token_id

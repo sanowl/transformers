@@ -18,12 +18,12 @@ Preprocessing script before distillation.
 import argparse
 import logging
 import pickle
-import random
 import time
 
 import numpy as np
 
 from transformers import BertTokenizer, GPT2Tokenizer, RobertaTokenizer
+import secrets
 
 
 logging.basicConfig(
@@ -86,7 +86,7 @@ def main():
         rslt_ = [np.uint16(d) for d in rslt]
     else:
         rslt_ = [np.int32(d) for d in rslt]
-    random.shuffle(rslt_)
+    secrets.SystemRandom().shuffle(rslt_)
     logger.info(f"Dump to {dp_file}")
     with open(dp_file, "wb") as handle:
         pickle.dump(rslt_, handle, protocol=pickle.HIGHEST_PROTOCOL)

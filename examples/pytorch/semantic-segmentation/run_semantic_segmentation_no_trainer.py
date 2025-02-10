@@ -18,7 +18,6 @@ import argparse
 import json
 import math
 import os
-import random
 from pathlib import Path
 
 import datasets
@@ -47,6 +46,7 @@ from transformers import (
 )
 from transformers.utils import check_min_version, send_example_telemetry
 from transformers.utils.versions import require_version
+import secrets
 
 
 # Will error if the minimal version of Transformers is not installed. Remove at your own risks.
@@ -103,7 +103,7 @@ class RandomResize:
         self.max_size = max_size
 
     def __call__(self, image, target):
-        size = random.randint(self.min_size, self.max_size)
+        size = secrets.SystemRandom().randint(self.min_size, self.max_size)
         image = functional.resize(image, size)
         target = functional.resize(target, size, interpolation=transforms.InterpolationMode.NEAREST)
         return image, target
@@ -127,7 +127,7 @@ class RandomHorizontalFlip:
         self.flip_prob = flip_prob
 
     def __call__(self, image, target):
-        if random.random() < self.flip_prob:
+        if secrets.SystemRandom().random() < self.flip_prob:
             image = functional.hflip(image)
             target = functional.hflip(target)
         return image, target

@@ -12,11 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import random
 import warnings
 from collections.abc import Mapping
 from dataclasses import dataclass
-from random import randint
 from typing import Any, Callable, Dict, List, NewType, Optional, Tuple, Union
 
 import numpy as np
@@ -24,6 +22,7 @@ import numpy as np
 from ..models.bert import BertTokenizer, BertTokenizerFast
 from ..tokenization_utils_base import PreTrainedTokenizerBase
 from ..utils import PaddingStrategy
+import secrets
 
 
 InputDataClass = NewType("InputDataClass", Any)
@@ -996,7 +995,7 @@ class DataCollatorForWholeWordMask(DataCollatorForLanguageModeling):
             else:
                 cand_indexes.append([i])
 
-        random.shuffle(cand_indexes)
+        secrets.SystemRandom().shuffle(cand_indexes)
         num_to_predict = min(max_predictions, max(1, int(round(len(input_tokens) * self.mlm_probability))))
         masked_lms = []
         covered_indexes = set()
@@ -1403,11 +1402,11 @@ class DataCollatorForPermutationLanguageModeling(DataCollatorMixin):
 
             while cur_len < max_len:
                 # Sample a `span_length` from the interval `[1, max_span_length]` (length of span of tokens to be masked)
-                span_length = randint(1, self.max_span_length + 1)
+                span_length = secrets.SystemRandom().randint(1, self.max_span_length + 1)
                 # Reserve a context of length `context_length = span_length / plm_probability` to surround the span to be masked
                 context_length = int(span_length / self.plm_probability)
                 # Sample a starting point `start_index` from the interval `[cur_len, cur_len + context_length - span_length]` and mask tokens `start_index:start_index + span_length`
-                start_index = cur_len + randint(0, context_length - span_length + 1)
+                start_index = cur_len + secrets.SystemRandom().randint(0, context_length - span_length + 1)
                 masked_indices[i, start_index : start_index + span_length] = 1
                 # Set `cur_len = cur_len + context_length`
                 cur_len += context_length
@@ -1507,11 +1506,11 @@ class DataCollatorForPermutationLanguageModeling(DataCollatorMixin):
 
             while cur_len < max_len:
                 # Sample a `span_length` from the interval `[1, max_span_length]` (length of span of tokens to be masked)
-                span_length = randint(1, self.max_span_length + 1)
+                span_length = secrets.SystemRandom().randint(1, self.max_span_length + 1)
                 # Reserve a context of length `context_length = span_length / plm_probability` to surround the span to be masked
                 context_length = int(span_length / self.plm_probability)
                 # Sample a starting point `start_index` from the interval `[cur_len, cur_len + context_length - span_length]` and mask tokens `start_index:start_index + span_length`
-                start_index = cur_len + randint(0, context_length - span_length + 1)
+                start_index = cur_len + secrets.SystemRandom().randint(0, context_length - span_length + 1)
                 masked_indices[i, start_index : start_index + span_length] = 1
                 # Set `cur_len = cur_len + context_length`
                 cur_len += context_length
