@@ -26,7 +26,6 @@ import json
 import logging
 import math
 import os
-import random
 import sys
 import warnings
 from dataclasses import dataclass, field
@@ -57,6 +56,7 @@ from transformers import (
 )
 from transformers.utils import send_example_telemetry
 from transformers.utils.versions import require_version
+import secrets
 
 
 logger = logging.getLogger(__name__)
@@ -511,7 +511,7 @@ def main():
         eval_dataset = eval_dataset.select(range(max_eval_samples))
 
     # Log a few random samples from the training set:
-    for index in random.sample(range(len(train_dataset)), min(3, len(train_dataset))):
+    for index in secrets.SystemRandom().sample(range(len(train_dataset)), min(3, len(train_dataset))):
         logger.info(f"Sample {index} of the training set: {train_dataset[index]}.")
     # endregion
 

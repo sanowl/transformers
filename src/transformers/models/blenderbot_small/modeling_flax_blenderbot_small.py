@@ -16,7 +16,6 @@
 
 
 import math
-import random
 from functools import partial
 from typing import Callable, Optional, Tuple
 
@@ -46,6 +45,7 @@ from ...modeling_flax_utils import (
 )
 from ...utils import add_start_docstrings, logging, replace_return_docstrings
 from .configuration_blenderbot_small import BlenderbotSmallConfig
+import secrets
 
 
 logger = logging.get_logger(__name__)
@@ -482,7 +482,7 @@ class FlaxBlenderbotSmallEncoderLayerCollection(nn.Module):
             if output_hidden_states:
                 all_hidden_states = all_hidden_states + (hidden_states,)
             # add LayerDrop (see https://arxiv.org/abs/1909.11556 for description)
-            dropout_probability = random.uniform(0, 1)
+            dropout_probability = secrets.SystemRandom().uniform(0, 1)
             if not deterministic and (dropout_probability < self.layerdrop):  # skip the layer
                 layer_outputs = (None, None)
             else:
@@ -631,7 +631,7 @@ class FlaxBlenderbotSmallDecoderLayerCollection(nn.Module):
             if output_hidden_states:
                 all_hidden_states += (hidden_states,)
                 # add LayerDrop (see https://arxiv.org/abs/1909.11556 for description)
-            dropout_probability = random.uniform(0, 1)
+            dropout_probability = secrets.SystemRandom().uniform(0, 1)
             if not deterministic and (dropout_probability < self.layerdrop):
                 layer_outputs = (None, None, None)
             else:

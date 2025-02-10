@@ -20,7 +20,6 @@ Fine-tuning a 🤗 Transformers model on token classification tasks (NER, POS, C
 import json
 import logging
 import os
-import random
 import warnings
 from dataclasses import dataclass, field
 from typing import Optional
@@ -45,6 +44,7 @@ from transformers import (
 )
 from transformers.utils import send_example_telemetry
 from transformers.utils.versions import require_version
+import secrets
 
 
 logger = logging.getLogger(__name__)
@@ -416,7 +416,7 @@ def main():
         eval_dataset = eval_dataset.select(range(max_eval_samples))
 
     # Log a few random samples from the training set:
-    for index in random.sample(range(len(train_dataset)), 3):
+    for index in secrets.SystemRandom().sample(range(len(train_dataset)), 3):
         logger.info(f"Sample {index} of the training set: {train_dataset[index]}.")
     # endregion
 

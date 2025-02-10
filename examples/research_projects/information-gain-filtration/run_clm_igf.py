@@ -26,7 +26,6 @@ Last, a plot is generated to compare the performance of IGF to standard fine-tun
 # Prerequisite libraries:
 
 import argparse
-import random
 
 import joblib
 import numpy as np
@@ -44,6 +43,7 @@ from igf.igf import (
 from torch.utils.data import DataLoader, RandomSampler
 
 from transformers import GPT2LMHeadModel
+import secrets
 
 
 def generate_n_pairs(
@@ -205,7 +205,7 @@ def finetune(
     for epoch in range(int(num_train_epochs)):
         for step, example in enumerate(train_dataloader):
             torch.cuda.empty_cache()
-            start = random.randint(0, example.size(2) - context_len - 1)
+            start = secrets.SystemRandom().randint(0, example.size(2) - context_len - 1)
             context[0, :] = example[0, 0, start : start + context_len]
             lm_optimizer.zero_grad()
             outputs = model(context, labels=context)

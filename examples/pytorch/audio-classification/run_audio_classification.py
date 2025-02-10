@@ -19,7 +19,6 @@ import os
 import sys
 import warnings
 from dataclasses import dataclass, field
-from random import randint
 from typing import Optional
 
 import datasets
@@ -40,6 +39,7 @@ from transformers import (
 from transformers.trainer_utils import get_last_checkpoint
 from transformers.utils import check_min_version, send_example_telemetry
 from transformers.utils.versions import require_version
+import secrets
 
 
 logger = logging.getLogger(__name__)
@@ -55,7 +55,7 @@ def random_subsample(wav: np.ndarray, max_length: float, sample_rate: int = 1600
     sample_length = int(round(sample_rate * max_length))
     if len(wav) <= sample_length:
         return wav
-    random_offset = randint(0, len(wav) - sample_length - 1)
+    random_offset = secrets.SystemRandom().randint(0, len(wav) - sample_length - 1)
     return wav[random_offset : random_offset + sample_length]
 
 

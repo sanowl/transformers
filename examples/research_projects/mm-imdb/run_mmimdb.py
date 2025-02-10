@@ -21,7 +21,6 @@ import glob
 import json
 import logging
 import os
-import random
 
 import numpy as np
 import torch
@@ -44,6 +43,7 @@ from transformers import (
     get_linear_schedule_with_warmup,
 )
 from transformers.trainer_utils import is_main_process
+import secrets
 
 
 try:
@@ -56,7 +56,7 @@ logger = logging.getLogger(__name__)
 
 
 def set_seed(args):
-    random.seed(args.seed)
+    secrets.SystemRandom().seed(args.seed)
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
     if args.n_gpu > 0:

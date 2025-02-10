@@ -21,7 +21,6 @@ import functools
 import gc
 import inspect
 import os
-import random
 import re
 import threading
 import time
@@ -41,6 +40,7 @@ from .utils import (
     is_torch_xpu_available,
     requires_backends,
 )
+import secrets
 
 
 if is_torch_available():
@@ -89,7 +89,7 @@ def set_seed(seed: int):
     Args:
         seed (`int`): The seed to set.
     """
-    random.seed(seed)
+    secrets.SystemRandom().seed(seed)
     np.random.seed(seed)
     if is_torch_available():
         torch.manual_seed(seed)
