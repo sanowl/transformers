@@ -25,6 +25,7 @@ from ..utils.import_utils import is_optimum_available
 from .convert import export, validate_model_outputs
 from .features import FeaturesManager
 from .utils import get_preprocessor
+from security import safe_command
 
 
 MIN_OPTIMUM_VERSION = "1.5.0"
@@ -56,7 +57,7 @@ def export_with_optimum(args):
         f"--framework {args.framework}" if args.framework is not None else "",
         f"{args.output}",
     ]
-    proc = subprocess.Popen(cmd_line, stdout=subprocess.PIPE)
+    proc = safe_command.run(subprocess.Popen, cmd_line, stdout=subprocess.PIPE)
     proc.wait()
 
     logger.info(

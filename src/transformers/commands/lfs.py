@@ -25,6 +25,7 @@ import requests
 
 from ..utils import logging
 from . import BaseTransformersCLICommand
+from security import safe_command
 
 
 logger = logging.get_logger(__name__)  # pylint: disable=invalid-name
@@ -84,11 +85,9 @@ class LfsEnableCommand:
         if not os.path.isdir(local_path):
             print("This does not look like a valid git repo.")
             exit(1)
-        subprocess.run(
-            "git config lfs.customtransfer.multipart.path transformers-cli".split(), check=True, cwd=local_path
+        safe_command.run(subprocess.run, "git config lfs.customtransfer.multipart.path transformers-cli".split(), check=True, cwd=local_path
         )
-        subprocess.run(
-            f"git config lfs.customtransfer.multipart.args {LFS_MULTIPART_UPLOAD_COMMAND}".split(),
+        safe_command.run(subprocess.run, f"git config lfs.customtransfer.multipart.args {LFS_MULTIPART_UPLOAD_COMMAND}".split(),
             check=True,
             cwd=local_path,
         )
