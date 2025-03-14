@@ -22,7 +22,6 @@ from pathlib import Path
 
 import haiku as hk
 import numpy as np
-import requests
 import torch
 from huggingface_hub import hf_hub_download
 from PIL import Image
@@ -39,6 +38,7 @@ from transformers import (
     PerceiverTokenizer,
 )
 from transformers.utils import logging
+from security import safe_requests
 
 
 logging.set_verbosity_info()
@@ -48,7 +48,7 @@ logger = logging.get_logger(__name__)
 def prepare_img():
     # We will verify our results on an image of a dog
     url = "https://storage.googleapis.com/perceiver_io/dalmation.jpg"
-    im = Image.open(requests.get(url, stream=True).raw)
+    im = Image.open(safe_requests.get(url, stream=True).raw)
     return im
 
 

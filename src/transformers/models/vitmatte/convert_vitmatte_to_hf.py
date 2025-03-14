@@ -18,13 +18,12 @@ URL: https://github.com/hustvl/ViTMatte
 """
 
 import argparse
-
-import requests
 import torch
 from huggingface_hub import hf_hub_download
 from PIL import Image
 
 from transformers import VitDetConfig, VitMatteConfig, VitMatteForImageMatting, VitMatteImageProcessor
+from security import safe_requests
 
 
 def get_config(model_name):
@@ -112,9 +111,9 @@ def convert_vitmatte_checkpoint(model_name, pytorch_dump_folder_path, push_to_hu
 
     # verify on dummy image + trimap
     url = "https://github.com/hustvl/ViTMatte/blob/main/demo/bulb_rgb.png?raw=true"
-    image = Image.open(requests.get(url, stream=True).raw).convert("RGB")
+    image = Image.open(safe_requests.get(url, stream=True).raw).convert("RGB")
     url = "https://github.com/hustvl/ViTMatte/blob/main/demo/bulb_trimap.png?raw=true"
-    trimap = Image.open(requests.get(url, stream=True).raw)
+    trimap = Image.open(safe_requests.get(url, stream=True).raw)
 
     pixel_values = processor(images=image, trimaps=trimap.convert("L"), return_tensors="pt").pixel_values
 

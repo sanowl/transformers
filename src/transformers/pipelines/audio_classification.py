@@ -15,10 +15,10 @@ import subprocess
 from typing import Union
 
 import numpy as np
-import requests
 
 from ..utils import add_end_docstrings, is_torch_available, is_torchaudio_available, logging
 from .base import PIPELINE_INIT_ARGS, Pipeline
+from security import safe_requests
 
 
 if is_torch_available():
@@ -149,7 +149,7 @@ class AudioClassificationPipeline(Pipeline):
             if inputs.startswith("http://") or inputs.startswith("https://"):
                 # We need to actually check for a real protocol, otherwise it's impossible to use a local file
                 # like http_huggingface_co.png
-                inputs = requests.get(inputs).content
+                inputs = safe_requests.get(inputs).content
             else:
                 with open(inputs, "rb") as f:
                     inputs = f.read()

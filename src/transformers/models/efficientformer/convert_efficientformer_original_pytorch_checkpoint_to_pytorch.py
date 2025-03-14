@@ -21,8 +21,6 @@ URL: https://github.com/snap-research/EfficientFormer
 import argparse
 import re
 from pathlib import Path
-
-import requests
 import torch
 from PIL import Image
 from torchvision.transforms import CenterCrop, Compose, Normalize, Resize, ToTensor
@@ -33,6 +31,7 @@ from transformers import (
     EfficientFormerImageProcessor,
 )
 from transformers.image_utils import IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD, PILImageResampling
+from security import safe_requests
 
 
 def rename_key(old_name, num_meta4D_last_stage):
@@ -115,7 +114,7 @@ def convert_torch_checkpoint(checkpoint, num_meta4D_last_stage):
 # We will verify our results on a COCO image
 def prepare_img():
     url = "http://images.cocodataset.org/val2017/000000039769.jpg"
-    image = Image.open(requests.get(url, stream=True).raw)
+    image = Image.open(safe_requests.get(url, stream=True).raw)
 
     return image
 

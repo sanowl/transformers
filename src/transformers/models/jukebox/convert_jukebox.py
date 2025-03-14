@@ -18,12 +18,11 @@ import argparse
 import json
 import os
 from pathlib import Path
-
-import requests
 import torch
 
 from transformers import JukeboxConfig, JukeboxModel
 from transformers.utils import logging
+from security import safe_requests
 
 
 logging.set_verbosity_info()
@@ -216,7 +215,7 @@ def convert_openai_checkpoint(model_name=None, pytorch_dump_folder_path=None):
     """
     for file in MODEL_MAPPING[model_name]:
         if not os.path.isfile(f"{pytorch_dump_folder_path}/{file.split('/')[-1]}"):
-            r = requests.get(f"{PREFIX}{file}", allow_redirects=True)
+            r = safe_requests.get(f"{PREFIX}{file}", allow_redirects=True)
             os.makedirs(f"{pytorch_dump_folder_path}/", exist_ok=True)
             open(f"{pytorch_dump_folder_path}/{file.split('/')[-1]}", "wb").write(r.content)
 

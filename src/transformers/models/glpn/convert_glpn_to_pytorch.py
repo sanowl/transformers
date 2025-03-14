@@ -18,13 +18,12 @@
 import argparse
 from collections import OrderedDict
 from pathlib import Path
-
-import requests
 import torch
 from PIL import Image
 
 from transformers import GLPNConfig, GLPNForDepthEstimation, GLPNImageProcessor
 from transformers.utils import logging
+from security import safe_requests
 
 
 logging.set_verbosity_info()
@@ -117,7 +116,7 @@ def read_in_k_v(state_dict, config):
 # We will verify our results on a COCO image
 def prepare_img():
     url = "http://images.cocodataset.org/val2017/000000039769.jpg"
-    image = Image.open(requests.get(url, stream=True).raw)
+    image = Image.open(safe_requests.get(url, stream=True).raw)
 
     return image
 

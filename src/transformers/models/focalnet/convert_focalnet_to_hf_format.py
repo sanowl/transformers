@@ -16,8 +16,6 @@
 
 import argparse
 import json
-
-import requests
 import torch
 from huggingface_hub import hf_hub_download
 from PIL import Image
@@ -25,6 +23,7 @@ from torchvision import transforms
 
 from transformers import BitImageProcessor, FocalNetConfig, FocalNetForImageClassification
 from transformers.image_utils import IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD, PILImageResampling
+from security import safe_requests
 
 
 def get_focalnet_config(model_name):
@@ -165,7 +164,7 @@ def convert_focalnet_checkpoint(model_name, pytorch_dump_folder_path, push_to_hu
         image_mean=IMAGENET_DEFAULT_MEAN,
         image_std=IMAGENET_DEFAULT_STD,
     )
-    image = Image.open(requests.get(url, stream=True).raw)
+    image = Image.open(safe_requests.get(url, stream=True).raw)
     inputs = processor(images=image, return_tensors="pt")
 
     image_transforms = transforms.Compose(

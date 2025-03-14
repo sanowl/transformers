@@ -19,7 +19,6 @@ import argparse
 import re
 
 import numpy as np
-import requests
 import torch
 from huggingface_hub import hf_hub_download
 from PIL import Image
@@ -31,6 +30,7 @@ from transformers import (
     SamProcessor,
     SamVisionConfig,
 )
+from security import safe_requests
 
 
 KEYS_TO_MODIFY_MAPPING = {
@@ -128,7 +128,7 @@ def convert_sam_checkpoint(model_name, pytorch_dump_folder, push_to_hub, model_h
     hf_model = hf_model.to("cuda")
 
     img_url = "https://huggingface.co/ybelkada/segment-anything/resolve/main/assets/car.png"
-    raw_image = Image.open(requests.get(img_url, stream=True).raw).convert("RGB")
+    raw_image = Image.open(safe_requests.get(img_url, stream=True).raw).convert("RGB")
 
     input_points = [[[400, 650]]]
     input_labels = [[1]]

@@ -17,13 +17,12 @@
 
 import argparse
 from pathlib import Path
-
-import requests
 import torch
 from PIL import Image
 
 from transformers import DPTConfig, DPTForDepthEstimation, DPTImageProcessor, Swinv2Config
 from transformers.utils import logging
+from security import safe_requests
 
 
 logging.set_verbosity_info()
@@ -179,7 +178,7 @@ def rename_key(dct, old, new):
 # We will verify our results on an image of cute cats
 def prepare_img():
     url = "http://images.cocodataset.org/val2017/000000039769.jpg"
-    im = Image.open(requests.get(url, stream=True).raw)
+    im = Image.open(safe_requests.get(url, stream=True).raw)
     return im
 
 
@@ -228,7 +227,7 @@ def convert_dpt_checkpoint(model_name, pytorch_dump_folder_path, verify_logits, 
         from torchvision import transforms
 
         url = "http://images.cocodataset.org/val2017/000000039769.jpg"
-        image = Image.open(requests.get(url, stream=True).raw)
+        image = Image.open(safe_requests.get(url, stream=True).raw)
 
         transforms = transforms.Compose(
             [

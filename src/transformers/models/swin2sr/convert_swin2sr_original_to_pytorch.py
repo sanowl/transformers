@@ -15,13 +15,12 @@
 """Convert Swin2SR checkpoints from the original repository. URL: https://github.com/mv-lab/swin2sr"""
 
 import argparse
-
-import requests
 import torch
 from PIL import Image
 from torchvision.transforms import Compose, Normalize, Resize, ToTensor
 
 from transformers import Swin2SRConfig, Swin2SRForImageSuperResolution, Swin2SRImageProcessor
+from security import safe_requests
 
 
 def get_config(checkpoint_url):
@@ -177,7 +176,7 @@ def convert_swin2sr_checkpoint(checkpoint_url, pytorch_dump_folder_path, push_to
 
     # verify values
     url = "https://github.com/mv-lab/swin2sr/blob/main/testsets/real-inputs/shanghai.jpg?raw=true"
-    image = Image.open(requests.get(url, stream=True).raw).convert("RGB")
+    image = Image.open(safe_requests.get(url, stream=True).raw).convert("RGB")
     processor = Swin2SRImageProcessor()
     # pixel_values = processor(image, return_tensors="pt").pixel_values
 

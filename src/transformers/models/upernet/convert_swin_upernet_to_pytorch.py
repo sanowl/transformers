@@ -19,13 +19,12 @@ URL: https://github.com/open-mmlab/mmsegmentation/tree/master/configs/swin
 
 import argparse
 import json
-
-import requests
 import torch
 from huggingface_hub import hf_hub_download
 from PIL import Image
 
 from transformers import SegformerImageProcessor, SwinConfig, UperNetConfig, UperNetForSemanticSegmentation
+from security import safe_requests
 
 
 def get_upernet_config(model_name):
@@ -232,7 +231,7 @@ def convert_upernet_checkpoint(model_name, pytorch_dump_folder_path, push_to_hub
 
     # verify on image
     url = "https://huggingface.co/datasets/hf-internal-testing/fixtures_ade20k/resolve/main/ADE_val_00000001.jpg"
-    image = Image.open(requests.get(url, stream=True).raw).convert("RGB")
+    image = Image.open(safe_requests.get(url, stream=True).raw).convert("RGB")
 
     processor = SegformerImageProcessor()
     pixel_values = processor(image, return_tensors="pt").pixel_values

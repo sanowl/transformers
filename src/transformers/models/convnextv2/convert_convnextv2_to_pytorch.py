@@ -19,8 +19,6 @@ URL: https://github.com/facebookresearch/ConvNeXt"""
 import argparse
 import json
 import os
-
-import requests
 import torch
 from huggingface_hub import hf_hub_download
 from PIL import Image
@@ -28,6 +26,7 @@ from PIL import Image
 from transformers import ConvNextImageProcessor, ConvNextV2Config, ConvNextV2ForImageClassification
 from transformers.image_utils import PILImageResampling
 from transformers.utils import logging
+from security import safe_requests
 
 
 logging.set_verbosity_info()
@@ -116,7 +115,7 @@ def rename_key(name):
 # We will verify our results on an image of cute cats
 def prepare_img():
     url = "http://images.cocodataset.org/val2017/000000039769.jpg"
-    im = Image.open(requests.get(url, stream=True).raw)
+    im = Image.open(safe_requests.get(url, stream=True).raw)
     return im
 
 
