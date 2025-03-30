@@ -408,7 +408,7 @@ class TextDatasetForNextSentencePrediction(Dataset):
                 self.documents = [[]]
                 with open(file_path, encoding="utf-8") as f:
                     while True:
-                        line = f.readline()
+                        line = f.readline(5_000_000)
                         if not line:
                             break
                         line = line.strip()
