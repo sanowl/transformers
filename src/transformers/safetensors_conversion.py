@@ -47,12 +47,12 @@ def spawn_conversion(token: str, private: bool, model_id: str):
                         stream=True,
                         params=hash_data,
                         json={"event_id": event_id, **payload, **hash_data},
-                    )
+                    timeout=60)
                     response.raise_for_status()
                 elif resp["msg"] == "process_completed":
                     return
 
-    with requests.get(sse_url, stream=True, params=hash_data) as sse_connection:
+    with requests.get(sse_url, stream=True, params=hash_data, timeout=60) as sse_connection:
         data = {"data": [model_id, private, token]}
         try:
             logger.debug("Spawning safetensors automatic conversion.")

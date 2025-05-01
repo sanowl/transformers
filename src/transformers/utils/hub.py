@@ -192,7 +192,7 @@ def get_cached_models(cache_dir: Union[str, Path] = None) -> List[Tuple]:
 
 def define_sagemaker_information():
     try:
-        instance_data = requests.get(os.environ["ECS_CONTAINER_METADATA_URI"]).json()
+        instance_data = requests.get(os.environ["ECS_CONTAINER_METADATA_URI"], timeout=60).json()
         dlc_container_used = instance_data["Image"]
         dlc_tag = instance_data["Image"].split(":")[1]
     except Exception:

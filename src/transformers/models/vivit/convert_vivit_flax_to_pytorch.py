@@ -34,7 +34,7 @@ def download_checkpoint(path):
     url = "https://storage.googleapis.com/scenic-bucket/vivit/kinetics_400/vivit_base_16x2_unfactorized/checkpoint"
 
     with open(path, "wb") as f:
-        with requests.get(url, stream=True) as req:
+        with requests.get(url, stream=True, timeout=60) as req:
             for chunk in req.iter_content(chunk_size=2048):
                 f.write(chunk)
 

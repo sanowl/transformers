@@ -48,7 +48,7 @@ logger = logging.get_logger(__name__)
 def prepare_img():
     # We will verify our results on an image of a dog
     url = "https://storage.googleapis.com/perceiver_io/dalmation.jpg"
-    im = Image.open(requests.get(url, stream=True).raw)
+    im = Image.open(requests.get(url, stream=True, timeout=60).raw)
     return im
 
 
