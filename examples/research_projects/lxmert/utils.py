@@ -42,6 +42,7 @@ from huggingface_hub.utils import insecure_hashlib
 from PIL import Image
 from tqdm.auto import tqdm
 from yaml import Loader, dump, load
+import yaml
 
 
 try:
@@ -154,7 +155,7 @@ class Config:
     @staticmethod
     def load_yaml(config):
         with open(config) as stream:
-            data = load(stream, Loader=Loader)
+            data = load(stream, Loader=yaml.SafeLoader)
         return data
 
     def __str__(self):
