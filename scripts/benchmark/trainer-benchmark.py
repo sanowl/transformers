@@ -117,6 +117,7 @@ import torch
 from tqdm import tqdm
 
 import transformers
+from security import safe_command
 
 
 nan = float("nan")
@@ -211,7 +212,7 @@ def process_run_single(id, cmd, variation, output_dir, target_metric_key, metric
             **{target_metric_key: random.choice([nan, 10.31, 100.2, 55.6666, 222.22222222])},
         )
 
-    result = subprocess.run(cmd, capture_output=True, text=True)
+    result = safe_command.run(subprocess.run, cmd, capture_output=True, text=True)
 
     if verbose:
         print("STDOUT", result.stdout)

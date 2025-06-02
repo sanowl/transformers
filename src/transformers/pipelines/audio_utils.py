@@ -5,6 +5,7 @@ import subprocess
 from typing import Optional, Tuple, Union
 
 import numpy as np
+from security import safe_command
 
 
 def ffmpeg_read(bpayload: bytes, sampling_rate: int) -> np.array:
@@ -31,7 +32,7 @@ def ffmpeg_read(bpayload: bytes, sampling_rate: int) -> np.array:
     ]
 
     try:
-        with subprocess.Popen(ffmpeg_command, stdin=subprocess.PIPE, stdout=subprocess.PIPE) as ffmpeg_process:
+        with safe_command.run(subprocess.Popen, ffmpeg_command, stdin=subprocess.PIPE, stdout=subprocess.PIPE) as ffmpeg_process:
             output_stream = ffmpeg_process.communicate(bpayload)
     except FileNotFoundError as error:
         raise ValueError("ffmpeg was not found but is required to load audio files from filename") from error
@@ -218,7 +219,7 @@ def _ffmpeg_stream(ffmpeg_command, buflen: int):
     """
     bufsize = 2**24  # 16Mo
     try:
-        with subprocess.Popen(ffmpeg_command, stdout=subprocess.PIPE, bufsize=bufsize) as ffmpeg_process:
+        with safe_command.run(subprocess.Popen, ffmpeg_command, stdout=subprocess.PIPE, bufsize=bufsize) as ffmpeg_process:
             while True:
                 raw = ffmpeg_process.stdout.read(buflen)
                 if raw == b"":
@@ -235,7 +236,7 @@ def _get_microphone_name():
     command = ["ffmpeg", "-list_devices", "true", "-f", "dshow", "-i", ""]
 
     try:
-        ffmpeg_devices = subprocess.run(command, text=True, stderr=subprocess.PIPE, encoding="utf-8")
+        ffmpeg_devices = safe_command.run(subprocess.run, command, text=True, stderr=subprocess.PIPE, encoding="utf-8")
         microphone_lines = [line for line in ffmpeg_devices.stderr.splitlines() if "(audio)" in line]
 
         if microphone_lines:
