@@ -1,8 +1,7 @@
 import os
 import zipfile
-
-import requests
 from get_ci_error_statistics import download_artifact, get_artifacts_links
+from security import safe_requests
 
 
 def get_daily_ci_runs(token, num_runs=7):
@@ -21,7 +20,7 @@ def get_daily_ci_runs(token, num_runs=7):
     # On `main` branch + event being `schedule` + not returning PRs + only `num_runs` results
     url += f"?branch=main&event=schedule&exclude_pull_requests=true&per_page={num_runs}"
 
-    result = requests.get(url, headers=headers).json()
+    result = safe_requests.get(url, headers=headers).json()
 
     return result["workflow_runs"]
 

@@ -19,8 +19,6 @@ import argparse
 import collections
 import json
 from pathlib import Path
-
-import requests
 import torch
 import yaml
 from huggingface_hub import hf_hub_download
@@ -33,6 +31,7 @@ from transformers import (
     MobileViTV2ForSemanticSegmentation,
 )
 from transformers.utils import logging
+from security import safe_requests
 
 
 logging.set_verbosity_info()
@@ -226,7 +225,7 @@ def remove_unused_keys(state_dict):
 def prepare_img():
     url = "http://images.cocodataset.org/val2017/000000039769.jpg"
     # url = "https://cdn.britannica.com/86/141086-050-9D7C75EE/Gulfstream-G450-business-jet-passengers.jpg"
-    im = Image.open(requests.get(url, stream=True).raw)
+    im = Image.open(safe_requests.get(url, stream=True).raw)
     return im
 
 

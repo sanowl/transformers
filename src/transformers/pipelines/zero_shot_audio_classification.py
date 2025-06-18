@@ -16,7 +16,6 @@ from collections import UserDict
 from typing import Union
 
 import numpy as np
-import requests
 
 from ..utils import (
     add_end_docstrings,
@@ -24,6 +23,7 @@ from ..utils import (
 )
 from .audio_classification import ffmpeg_read
 from .base import PIPELINE_INIT_ARGS, Pipeline
+from security import safe_requests
 
 
 logger = logging.get_logger(__name__)
@@ -99,7 +99,7 @@ class ZeroShotAudioClassificationPipeline(Pipeline):
             if audio.startswith("http://") or audio.startswith("https://"):
                 # We need to actually check for a real protocol, otherwise it's impossible to use a local file
                 # like http_huggingface_co.png
-                audio = requests.get(audio).content
+                audio = safe_requests.get(audio).content
             else:
                 with open(audio, "rb") as f:
                     audio = f.read()

@@ -20,9 +20,8 @@ import re
 import time
 from fnmatch import fnmatch
 from typing import Dict, List
-
-import requests
 from slack_sdk import WebClient
+from security import safe_requests
 
 
 client = WebClient(token=os.environ["CI_SLACK_BOT_TOKEN"])
@@ -285,7 +284,7 @@ class Message:
 def get_job_links():
     run_id = os.environ["GITHUB_RUN_ID"]
     url = f"https://api.github.com/repos/huggingface/transformers/actions/runs/{run_id}/jobs?per_page=100"
-    result = requests.get(url).json()
+    result = safe_requests.get(url).json()
     jobs = {}
 
     try:
@@ -293,7 +292,7 @@ def get_job_links():
         pages_to_iterate_over = math.ceil((result["total_count"] - 100) / 100)
 
         for i in range(pages_to_iterate_over):
-            result = requests.get(url + f"&page={i + 2}").json()
+            result = safe_requests.get(url + f"&page={i + 2}").json()
             jobs.update({job["name"]: job["html_url"] for job in result["jobs"]})
 
         return jobs

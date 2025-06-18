@@ -18,14 +18,13 @@
 import argparse
 import json
 from pathlib import Path
-
-import requests
 import torch
 from huggingface_hub import cached_download, hf_hub_url
 from PIL import Image
 
 from transformers import DeformableDetrConfig, DeformableDetrForObjectDetection, DeformableDetrImageProcessor
 from transformers.utils import logging
+from security import safe_requests
 
 
 logging.set_verbosity_info()
@@ -79,7 +78,7 @@ def read_in_q_k_v(state_dict):
 # We will verify our results on an image of cute cats
 def prepare_img():
     url = "http://images.cocodataset.org/val2017/000000039769.jpg"
-    im = Image.open(requests.get(url, stream=True).raw)
+    im = Image.open(safe_requests.get(url, stream=True).raw)
 
     return im
 
