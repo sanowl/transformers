@@ -19,7 +19,6 @@ Supported architectures include: BERT -> DistilBERT, RoBERTa -> DistilRoBERTa, G
 import argparse
 import json
 import os
-import pickle
 import shutil
 
 import numpy as np
@@ -42,6 +41,7 @@ from transformers import (
     RobertaTokenizer,
 )
 from utils import git_log, init_gpu_params, logger, set_seed
+import fickling
 
 
 MODEL_CLASSES = {
@@ -260,12 +260,12 @@ def main():
     # DATA LOADER #
     logger.info(f"Loading data from {args.data_file}")
     with open(args.data_file, "rb") as fp:
-        data = pickle.load(fp)
+        data = fickling.load(fp)
 
     if args.mlm:
         logger.info(f"Loading token counts from {args.token_counts} (already pre-computed)")
         with open(args.token_counts, "rb") as fp:
-            counts = pickle.load(fp)
+            counts = fickling.load(fp)
 
         token_probs = np.maximum(counts, 1) ** -args.mlm_smoothing
         for idx in special_tok_ids.values():
