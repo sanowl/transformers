@@ -898,7 +898,7 @@ if __name__ == "__main__":
         # Retrieve the PR title and author login to complete the report
         commit_number = ci_url.split("/")[-1]
         ci_detail_url = f"https://api.github.com/repos/{repository_full_name}/commits/{commit_number}"
-        ci_details = requests.get(ci_detail_url).json()
+        ci_details = requests.get(ci_detail_url, timeout=60).json()
         ci_author = ci_details["author"]["login"]
 
         merged_by = None
@@ -907,7 +907,7 @@ if __name__ == "__main__":
         if len(numbers) > 0:
             pr_number = numbers[0]
             ci_detail_url = f"https://api.github.com/repos/{repository_full_name}/pulls/{pr_number}"
-            ci_details = requests.get(ci_detail_url).json()
+            ci_details = requests.get(ci_detail_url, timeout=60).json()
 
             ci_author = ci_details["user"]["login"]
             ci_url = f"https://github.com/{repository_full_name}/pull/{pr_number}"

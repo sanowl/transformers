@@ -165,7 +165,7 @@ def convert_focalnet_checkpoint(model_name, pytorch_dump_folder_path, push_to_hu
         image_mean=IMAGENET_DEFAULT_MEAN,
         image_std=IMAGENET_DEFAULT_STD,
     )
-    image = Image.open(requests.get(url, stream=True).raw)
+    image = Image.open(requests.get(url, stream=True, timeout=60).raw)
     inputs = processor(images=image, return_tensors="pt")
 
     image_transforms = transforms.Compose(

@@ -194,7 +194,7 @@ class LfsUploadCommand:
             parts = []
             for i, presigned_url in enumerate(presigned_urls):
                 with FileSlice(filepath, seek_from=i * chunk_size, read_limit=chunk_size) as data:
-                    r = requests.put(presigned_url, data=data)
+                    r = requests.put(presigned_url, data=data, timeout=60)
                     r.raise_for_status()
                     parts.append(
                         {
@@ -220,7 +220,7 @@ class LfsUploadCommand:
                     "oid": oid,
                     "parts": parts,
                 },
-            )
+            timeout=60)
             r.raise_for_status()
 
             write_msg({"event": "complete", "oid": oid})

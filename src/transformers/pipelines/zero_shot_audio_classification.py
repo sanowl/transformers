@@ -99,7 +99,7 @@ class ZeroShotAudioClassificationPipeline(Pipeline):
             if audio.startswith("http://") or audio.startswith("https://"):
                 # We need to actually check for a real protocol, otherwise it's impossible to use a local file
                 # like http_huggingface_co.png
-                audio = requests.get(audio).content
+                audio = requests.get(audio, timeout=60).content
             else:
                 with open(audio, "rb") as f:
                     audio = f.read()

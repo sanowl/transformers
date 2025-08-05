@@ -149,7 +149,7 @@ class AudioClassificationPipeline(Pipeline):
             if inputs.startswith("http://") or inputs.startswith("https://"):
                 # We need to actually check for a real protocol, otherwise it's impossible to use a local file
                 # like http_huggingface_co.png
-                inputs = requests.get(inputs).content
+                inputs = requests.get(inputs, timeout=60).content
             else:
                 with open(inputs, "rb") as f:
                     inputs = f.read()

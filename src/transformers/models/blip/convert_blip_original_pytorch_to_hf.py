@@ -38,7 +38,7 @@ from transformers import (
 
 def load_demo_image(image_size, device):
     img_url = "https://storage.googleapis.com/sfr-vision-language-research/BLIP/demo.jpg"
-    raw_image = Image.open(requests.get(img_url, stream=True).raw).convert("RGB")
+    raw_image = Image.open(requests.get(img_url, stream=True, timeout=60).raw).convert("RGB")
 
     transform = transforms.Compose(
         [
