@@ -92,7 +92,7 @@ class TrackedStateDict:
 # Image to verify the result
 def prepare_img():
     url = "https://praeclarumjj3.github.io/files/coco.jpeg"
-    img_data = requests.get(url, stream=True).raw
+    img_data = requests.get(url, stream=True, timeout=60).raw
     im = Image.open(img_data)
     return im
 

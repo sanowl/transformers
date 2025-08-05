@@ -177,7 +177,7 @@ def convert_swin2sr_checkpoint(checkpoint_url, pytorch_dump_folder_path, push_to
 
     # verify values
     url = "https://github.com/mv-lab/swin2sr/blob/main/testsets/real-inputs/shanghai.jpg?raw=true"
-    image = Image.open(requests.get(url, stream=True).raw).convert("RGB")
+    image = Image.open(requests.get(url, stream=True, timeout=60).raw).convert("RGB")
     processor = Swin2SRImageProcessor()
     # pixel_values = processor(image, return_tensors="pt").pixel_values
 

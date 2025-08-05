@@ -86,7 +86,7 @@ class TrackedStateDict:
 # We will verify our results on an image of cute cats
 def prepare_img():
     url = "http://images.cocodataset.org/val2017/000000039769.jpg"
-    img_data = requests.get(url, stream=True).raw
+    img_data = requests.get(url, stream=True, timeout=60).raw
     im = Image.open(img_data)
     return im
 
